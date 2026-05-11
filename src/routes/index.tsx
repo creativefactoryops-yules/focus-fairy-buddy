@@ -321,6 +321,27 @@ function App() {
     };
   }, []);
 
+  // Background music: loops per-vibe, auto-plays on mood change after first user gesture
+  useEffect(() => {
+    if (!audioRef.current) {
+      const a = new Audio();
+      a.loop = true;
+      a.volume = 0.35;
+      a.preload = "auto";
+      audioRef.current = a;
+    }
+    const a = audioRef.current;
+    if (muted) { a.pause(); return; }
+    if (a.src !== md.music) {
+      a.src = md.music;
+    }
+    const p = a.play();
+    if (p && typeof p.catch === "function") p.catch(() => { /* autoplay blocked until gesture */ });
+    return () => { /* keep playing across re-renders */ };
+  }, [mood, muted, md.music]);
+
+  useEffect(() => () => { audioRef.current?.pause(); audioRef.current = null; }, []);
+
   const startFocus  = () => { setElapsed(0); setRunning(true); setPose("work"); showNotif("🧠 Focus started! We've got this!"); };
   const pauseFocus  = () => { setRunning(false); setPose("idle"); };
   const resumeFocus = () => { setRunning(true); setPose("work"); };
