@@ -12,10 +12,14 @@ export const Route = createFileRoute("/")({
 });
 
 const MOODS = [
-  { id: "focus", label: "Focus", bg: "#0c160c", sky: "#07100a", accent: "#4ade80", desc: "Deep work 🌿" },
-  { id: "chill", label: "Chill", bg: "#0e0e1e", sky: "#080812", accent: "#818cf8", desc: "Easy flow 🌙" },
-  { id: "storm", label: "Storm", bg: "#0b1018", sky: "#070c10", accent: "#60a5fa", desc: "Power ⚡" },
-  { id: "cozy",  label: "Cozy",  bg: "#180f08", sky: "#100800", accent: "#fb923c", desc: "Warm 🕯️" },
+  { id: "focus", label: "Focus", bg: "#0c160c", sky: "#07100a", accent: "#4ade80", desc: "Deep work 🌿",
+    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+  { id: "chill", label: "Chill", bg: "#0e0e1e", sky: "#080812", accent: "#818cf8", desc: "Easy flow 🌙",
+    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+  { id: "storm", label: "Storm", bg: "#0b1018", sky: "#070c10", accent: "#60a5fa", desc: "Power ⚡",
+    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
+  { id: "cozy",  label: "Cozy",  bg: "#180f08", sky: "#100800", accent: "#fb923c", desc: "Warm 🕯️",
+    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
 ];
 
 type PoseKey = "idle" | "work" | "dance" | "eat" | "feed";
