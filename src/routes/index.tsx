@@ -421,7 +421,13 @@ function App() {
             </div>
 
             <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", paddingTop:11 }}>
-              <div style={{ fontSize:9, textTransform:"uppercase", letterSpacing:2, color:"rgba(255,255,255,0.22)", marginBottom:7, textAlign:"center" }}>vibe</div>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:7 }}>
+                <div style={{ fontSize:9, textTransform:"uppercase", letterSpacing:2, color:"rgba(255,255,255,0.22)", flex:1, textAlign:"center", paddingLeft:24 }}>vibe + music</div>
+                <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute music" : "Mute music"}
+                  style={{ width:24, height:24, borderRadius:6, border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.03)", color:"rgba(255,255,255,0.45)", fontSize:11, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {muted ? "🔇" : "🔊"}
+                </button>
+              </div>
               <div style={{ display:"flex", gap:5 }}>
                 {MOODS.map((m) => (
                   <button key={m.id} onClick={() => setMood(m.id)}
