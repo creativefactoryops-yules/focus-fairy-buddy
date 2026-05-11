@@ -12,10 +12,14 @@ export const Route = createFileRoute("/")({
 });
 
 const MOODS = [
-  { id: "focus", label: "Focus", bg: "#0c160c", sky: "#07100a", accent: "#4ade80", desc: "Deep work 🌿" },
-  { id: "chill", label: "Chill", bg: "#0e0e1e", sky: "#080812", accent: "#818cf8", desc: "Easy flow 🌙" },
-  { id: "storm", label: "Storm", bg: "#0b1018", sky: "#070c10", accent: "#60a5fa", desc: "Power ⚡" },
-  { id: "cozy",  label: "Cozy",  bg: "#180f08", sky: "#100800", accent: "#fb923c", desc: "Warm 🕯️" },
+  { id: "focus", label: "Focus", bg: "#0c160c", sky: "#07100a", accent: "#4ade80", desc: "Deep work 🌿",
+    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+  { id: "chill", label: "Chill", bg: "#0e0e1e", sky: "#080812", accent: "#818cf8", desc: "Easy flow 🌙",
+    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+  { id: "storm", label: "Storm", bg: "#0b1018", sky: "#070c10", accent: "#60a5fa", desc: "Power ⚡",
+    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
+  { id: "cozy",  label: "Cozy",  bg: "#180f08", sky: "#100800", accent: "#fb923c", desc: "Warm 🕯️",
+    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
 ];
 
 type PoseKey = "idle" | "work" | "dance" | "eat" | "feed";
@@ -267,9 +271,11 @@ function App() {
   const [sessions, setSessions] = useState(0);
   const [notif, setNotif] = useState({ text: "", id: 0 });
   const [msgIdx, setMsgIdx] = useState(0);
+  const [muted, setMuted] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const poseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const msgRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const runningRef = useRef(running);
   runningRef.current = running;
 
@@ -314,6 +320,27 @@ function App() {
       if (msgRef.current) clearInterval(msgRef.current);
     };
   }, []);
+
+  // Background music: loops per-vibe, auto-plays on mood change after first user gesture
+  useEffect(() => {
+    if (!audioRef.current) {
+      const a = new Audio();
+      a.loop = true;
+      a.volume = 0.35;
+      a.preload = "auto";
+      audioRef.current = a;
+    }
+    const a = audioRef.current;
+    if (muted) { a.pause(); return; }
+    if (a.src !== md.music) {
+      a.src = md.music;
+    }
+    const p = a.play();
+    if (p && typeof p.catch === "function") p.catch(() => { /* autoplay blocked until gesture */ });
+    return () => { /* keep playing across re-renders */ };
+  }, [mood, muted, md.music]);
+
+  useEffect(() => () => { audioRef.current?.pause(); audioRef.current = null; }, []);
 
   const startFocus  = () => { setElapsed(0); setRunning(true); setPose("work"); showNotif("🧠 Focus started! We've got this!"); };
   const pauseFocus  = () => { setRunning(false); setPose("idle"); };
@@ -394,7 +421,13 @@ function App() {
             </div>
 
             <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", paddingTop:11 }}>
-              <div style={{ fontSize:9, textTransform:"uppercase", letterSpacing:2, color:"rgba(255,255,255,0.22)", marginBottom:7, textAlign:"center" }}>vibe</div>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:7 }}>
+                <div style={{ fontSize:9, textTransform:"uppercase", letterSpacing:2, color:"rgba(255,255,255,0.22)", flex:1, textAlign:"center", paddingLeft:24 }}>vibe + music</div>
+                <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Unmute music" : "Mute music"}
+                  style={{ width:24, height:24, borderRadius:6, border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.03)", color:"rgba(255,255,255,0.45)", fontSize:11, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {muted ? "🔇" : "🔊"}
+                </button>
+              </div>
               <div style={{ display:"flex", gap:5 }}>
                 {MOODS.map((m) => (
                   <button key={m.id} onClick={() => setMood(m.id)}
