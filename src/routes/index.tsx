@@ -188,6 +188,31 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
         <div style={{ position:"absolute", top:0, left:0, width:14, height:"100%", background:"linear-gradient(to right,rgba(124,58,237,0.15),transparent)" }} />
         <div style={{ position:"absolute", top:0, right:0, width:14, height:"100%", background:"linear-gradient(to left,rgba(124,58,237,0.15),transparent)" }} />
       </div>
+      {/* Window perch shelf — wooden ledge below window for Mochi */}
+      <div style={{ position:"absolute", top:"calc(5% + 74px - 2px)", left:"50%", transform:"translateX(-50%)", width:104, height:6, background:"#6b4a2a", borderRadius:"2px 2px 1px 1px", boxShadow:"0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)", zIndex:3 }}>
+        <div style={{ position:"absolute", top:0, left:0, right:0, height:1.5, background:"#8a6438" }} />
+        {/* tiny cushion on perch */}
+        <div style={{ position:"absolute", top:-3, left:"50%", transform:"translateX(-50%)", width:38, height:4, background: accent + "44", borderRadius:3, border:"1px solid " + accent + "55" }} />
+      </div>
+      {/* Salvador Dali — Persistence of Memory homage (melting clock) */}
+      <div style={{ position:"absolute", top:"16%", left:"6%", width:30, height:26, background:"#2a1a0d", border:"2px solid #6b4a2a", borderRadius:2, boxShadow:"0 3px 8px rgba(0,0,0,0.55), inset 0 0 6px rgba(0,0,0,0.6)", zIndex:1, overflow:"hidden" }}>
+        {/* surreal sky */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,#d4a574 0%,#c97f4a 45%,#3a2418 70%,#1a0f08 100%)" }} />
+        {/* distant horizon line */}
+        <div style={{ position:"absolute", top:"55%", left:0, right:0, height:1, background:"rgba(0,0,0,0.4)" }} />
+        {/* melting clock draped over branch */}
+        <div style={{ position:"absolute", top:7, left:5, width:14, height:8, background:"#e8c97a", borderRadius:"50% 50% 50% 50% / 60% 60% 40% 40%", boxShadow:"inset 0 -2px 0 rgba(0,0,0,0.25)", transform:"rotate(-8deg)" }}>
+          <div style={{ position:"absolute", top:1.5, left:5, width:1, height:3, background:"#1a0f08" }} />
+          <div style={{ position:"absolute", top:3, left:5, width:3, height:1, background:"#1a0f08" }} />
+        </div>
+        {/* drip */}
+        <div style={{ position:"absolute", top:13, left:9, width:3, height:6, background:"#e8c97a", borderRadius:"40% 40% 50% 50%", transformOrigin:"top center", animation:"dripDali 3.4s ease-in-out infinite" }} />
+        {/* second smaller clock on a cube */}
+        <div style={{ position:"absolute", top:14, right:4, width:5, height:5, background:"#b3994a", borderRadius:"50%", transform:"rotate(20deg)" }} />
+        <div style={{ position:"absolute", top:18, right:4, width:5, height:3, background:"#3a2418" }} />
+        {/* signature corner */}
+        <div style={{ position:"absolute", bottom:1, right:2, fontSize:4, color:"rgba(232,201,122,0.55)", fontStyle:"italic", letterSpacing:0.3 }}>Dalí</div>
+      </div>
       <div style={{ position:"absolute", top:"38%", left:"70%" }}>
         <div style={{ width:6, height:10, background:"#92400e", borderRadius:"2px 2px 0 0", marginLeft:3 }} />
         <div style={{ width:15, height:13, borderRadius:"60% 60% 40% 40%", background:"#166534", marginTop:-5 }} />
