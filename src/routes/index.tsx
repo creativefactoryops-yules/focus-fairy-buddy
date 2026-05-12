@@ -449,7 +449,7 @@ function App() {
 
           <div style={{ position:"relative", width:"100%", paddingTop:"60%", borderRadius:"20px 20px 0 0", overflow:"hidden", border:"1px solid rgba(255,255,255,0.07)", borderBottom:"none", boxShadow:"0 -4px 24px rgba(0,0,0,0.5)" }}>
             <div style={{ position:"absolute", inset:0 }}>
-              <Room mood={mood} pose={pose} accent={accent} />
+              <Room mood={mood} pose={pose} accent={accent} candleLit={candleLit} />
               <Girl pose={pose} accent={accent} />
               <Cat pose={pose} accent={accent} />
               <Confetti active={pose === "dance"} accent={accent} />
