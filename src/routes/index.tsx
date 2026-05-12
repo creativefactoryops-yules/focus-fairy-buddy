@@ -67,6 +67,11 @@ const CSS = `
 @keyframes fadein    { from{opacity:0} to{opacity:1} }
 @keyframes notifPop  { 0%{opacity:0;transform:translateX(-50%) translateY(-16px)} 12%{opacity:1;transform:translateX(-50%) translateY(0)} 85%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-12px)} }
 @keyframes confettiFall { 0%{transform:translateY(-8px) rotate(0);opacity:1} 100%{transform:translateY(90px) rotate(400deg);opacity:0} }
+@keyframes flame      { 0%,100%{transform:translateX(-50%) scaleY(1) scaleX(1);opacity:1} 50%{transform:translateX(-50%) scaleY(1.15) scaleX(0.88);opacity:0.92} }
+@keyframes petArm     { 0%,100%{transform:rotate(70deg) translateY(4px)} 50%{transform:rotate(85deg) translateY(8px)} }
+@keyframes purrPaw    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
+@keyframes perchBreathe { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.92)} }
+@keyframes dripDali   { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(2px) scaleY(1.1)} }
 .bd-app button { font-family:inherit; }
 `;
 
