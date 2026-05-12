@@ -234,7 +234,7 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
         <div style={{ position:"absolute", top:38, left:3, width:3, height:3, background:"#16a34a", borderRadius:"50%" }} />
         <div style={{ position:"absolute", top:42, right:4, width:3, height:3, background:"#22c55e", borderRadius:"50%" }} />
       </div>
-
+      <div style={{ position:"absolute", top:"38%", left:"70%" }}>
         <div style={{ width:6, height:10, background:"#92400e", borderRadius:"2px 2px 0 0", marginLeft:3 }} />
         <div style={{ width:15, height:13, borderRadius:"60% 60% 40% 40%", background:"#166534", marginTop:-5 }} />
         <div style={{ width:10, height:10, borderRadius:"50%", background:"#15803d", marginTop:-5, marginLeft:3 }} />
