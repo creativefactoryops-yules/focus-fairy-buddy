@@ -234,6 +234,40 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
       <div style={{ position:"absolute", bottom:"28%", left:0, right:0, height:2, background:"rgba(0,0,0,0.3)" }} />
       <div style={{ position:"absolute", bottom:"24%", left:"9%", right:"9%", height:17, background:"#4b3b2a", borderRadius:"3px 3px 0 0", boxShadow:"0 4px 16px rgba(0,0,0,0.5)" }} />
       <div style={{ position:"absolute", bottom:"24%", left:"9%", right:"9%", height:3, background:"#5c4a35", borderRadius:"3px 3px 0 0" }} />
+      {/* Money tree (pachira) on left side of desk */}
+      <div style={{ position:"absolute", bottom:"calc(24% + 16px)", left:"14%", width:18, height:22, zIndex:3 }}>
+        {/* terracotta pot */}
+        <div style={{ position:"absolute", bottom:0, left:2, width:14, height:8, background:"linear-gradient(to bottom,#b45309,#7c2d12)", borderRadius:"1px 1px 3px 3px", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.15)" }} />
+        <div style={{ position:"absolute", bottom:7, left:1, width:16, height:2, background:"#92400e", borderRadius:1 }} />
+        {/* braided trunk */}
+        <div style={{ position:"absolute", bottom:8, left:8, width:2, height:6, background:"#3f2410", borderRadius:1 }} />
+        <div style={{ position:"absolute", bottom:8, left:8, width:2, height:6, background:"#5a3418", borderRadius:1, transform:"skewX(-15deg)" }} />
+        {/* lush canopy */}
+        <div style={{ position:"absolute", bottom:11, left:0, width:9, height:9, background:"#15803d", borderRadius:"60% 50% 50% 60%" }} />
+        <div style={{ position:"absolute", bottom:12, left:6, width:11, height:10, background:"#16a34a", borderRadius:"50% 60% 55% 50%" }} />
+        <div style={{ position:"absolute", bottom:15, left:3, width:9, height:8, background:"#22c55e", borderRadius:"50% 60% 50% 60%" }} />
+        <div style={{ position:"absolute", bottom:14, left:10, width:6, height:6, background:"#166534", borderRadius:"50%" }} />
+        {/* lucky red ribbon */}
+        <div style={{ position:"absolute", bottom:8, left:6, width:6, height:1.5, background:"#dc2626", borderRadius:1 }} />
+      </div>
+      {/* Candle on right side of desk */}
+      <div style={{ position:"absolute", bottom:"calc(24% + 16px)", right:"16%", width:12, height:20, zIndex:3 }}>
+        {/* saucer */}
+        <div style={{ position:"absolute", bottom:0, left:0, width:12, height:2, background:"#1f1f1f", borderRadius:"50%" }} />
+        {/* candle body */}
+        <div style={{ position:"absolute", bottom:1, left:2, width:8, height:12, background:"linear-gradient(to right,#f5e6c8,#d9c08a,#f5e6c8)", borderRadius:"1px 1px 0 0", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.4), inset -1px 0 0 rgba(0,0,0,0.18)" }} />
+        {/* melted top */}
+        <div style={{ position:"absolute", bottom:13, left:2, width:8, height:2, background:"#e8d4a0", borderRadius:"50%" }} />
+        {/* wick */}
+        <div style={{ position:"absolute", bottom:13, left:5.5, width:1, height: candleLit ? 1.5 : 3, background:"#1a1a1a" }} />
+        {/* flame */}
+        {candleLit && (
+          <>
+            <div style={{ position:"absolute", bottom:14, left:"50%", width:4, height:7, background:"radial-gradient(ellipse at center bottom,#fff4a3 10%,#fbbf24 50%,#f97316 85%)", borderRadius:"50% 50% 40% 40% / 70% 70% 30% 30%", transformOrigin:"bottom center", animation:"flame 0.32s ease-in-out infinite", boxShadow:"0 0 8px #fbbf24cc, 0 0 16px #f9731688" }} />
+            <div style={{ position:"absolute", bottom:13, left:"50%", transform:"translateX(-50%)", width:14, height:14, background:"radial-gradient(circle,#fbbf2433 0%,transparent 70%)", borderRadius:"50%", pointerEvents:"none" }} />
+          </>
+        )}
+      </div>
       <div style={{ position:"absolute", bottom:0, left:"13%", width:8, height:"25%", background:"#3b2a1a", borderRadius:"0 0 3px 3px" }} />
       <div style={{ position:"absolute", bottom:0, right:"13%", width:8, height:"25%", background:"#3b2a1a", borderRadius:"0 0 3px 3px" }} />
       <div style={{ position:"absolute", bottom:"37%", left:"50%", transform:"translateX(-50%)", width:46, height:32, background:"#111", borderRadius:3, border:"2px solid #374151", animation:"screenglo 3s ease-in-out infinite", boxShadow:"0 0 12px " + accent + "55" }}>
