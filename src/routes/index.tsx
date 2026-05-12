@@ -67,7 +67,9 @@ const CSS = `
 @keyframes fadein    { from{opacity:0} to{opacity:1} }
 @keyframes notifPop  { 0%{opacity:0;transform:translateX(-50%) translateY(-16px)} 12%{opacity:1;transform:translateX(-50%) translateY(0)} 85%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-12px)} }
 @keyframes confettiFall { 0%{transform:translateY(-8px) rotate(0);opacity:1} 100%{transform:translateY(90px) rotate(400deg);opacity:0} }
-@keyframes flame      { 0%,100%{transform:translateX(-50%) scaleY(1) scaleX(1);opacity:1} 50%{transform:translateX(-50%) scaleY(1.15) scaleX(0.88);opacity:0.92} }
+@keyframes flame      { 0%{transform:translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg);opacity:1} 25%{transform:translateX(-50%) scaleY(1.18) scaleX(0.82) rotate(3deg);opacity:0.95} 50%{transform:translateX(-50%) scaleY(0.92) scaleX(1.1) rotate(-3deg);opacity:1} 75%{transform:translateX(-50%) scaleY(1.22) scaleX(0.78) rotate(2deg);opacity:0.88} 100%{transform:translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg);opacity:1} }
+@keyframes hangSway   { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+@keyframes flowerNod  { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
 @keyframes petArm     { 0%,100%{transform:rotate(70deg) translateY(4px)} 50%{transform:rotate(85deg) translateY(8px)} }
 @keyframes purrPaw    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
 @keyframes perchBreathe { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.92)} }
