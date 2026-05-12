@@ -495,10 +495,17 @@ function App() {
               </div>
             </div>
 
-            <div style={{ display:"flex", gap:7, marginBottom:13 }}>
-              {[{ label: "💃 Dance break", fn: doDance }, { label: "🍜 Eat!", fn: doEat }, { label: "🐱 Feed Mochi", fn: doFeed }].map((btn) => (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6, marginBottom:13 }}>
+              {[
+                { label: "💃 Dance", fn: doDance },
+                { label: "🍜 Eat", fn: doEat },
+                { label: "🐱 Feed", fn: doFeed },
+                { label: "💜 Pet Mochi", fn: doPet },
+                { label: "🌤️ Window perch", fn: doPerch },
+                { label: candleLit ? "🕯️ Candle ✓" : "🕯️ Light candle", fn: doCandle },
+              ].map((btn) => (
                 <button key={btn.label} onClick={btn.fn}
-                  style={{ flex:1, padding:"9px 4px", borderRadius:11, border:"1px solid rgba(255,255,255,0.09)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:11, fontWeight:600, cursor:"pointer", lineHeight:1.3, transition:"all 0.2s ease" }}>
+                  style={{ padding:"9px 4px", borderRadius:11, border:"1px solid rgba(255,255,255,0.09)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:10.5, fontWeight:600, cursor:"pointer", lineHeight:1.3, transition:"all 0.2s ease" }}>
                   {btn.label}
                 </button>
               ))}
