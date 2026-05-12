@@ -128,9 +128,20 @@ function Girl({ pose, accent }: { pose: string; accent: string }) {
 function Cat({ pose, accent }: { pose: string; accent: string }) {
   const fur = "#d4a0d4", dark = "#9b6b9b";
   const isDancing = pose === "dance", isFeeding = pose === "feed";
-  const btm = isDancing || isFeeding ? "18%" : "26%";
+  const isPerch = pose === "perch", isPet = pose === "pet";
+  // position overrides for special poses
+  const posStyle: React.CSSProperties = isPerch
+    ? { top:"15.5%", left:"50%", transform:"translateX(-50%)", bottom:"auto" }
+    : isPet
+    ? { bottom:"15%", left:"32%" }
+    : { bottom: isDancing || isFeeding ? "18%" : "26%", left:"18%" };
+  const anim = isDancing ? "catDance 0.8s ease-in-out infinite"
+    : isFeeding ? "catEatBob 0.9s ease-in-out infinite"
+    : isPerch ? "perchBreathe 3.4s ease-in-out infinite"
+    : isPet ? "purrPaw 0.5s ease-in-out infinite"
+    : "catwalk 8s ease-in-out 1s infinite";
   return (
-    <div style={{ position:"absolute", bottom:btm, left:"18%", width:32, height:28, zIndex:4, transition:"bottom 0.5s ease", animation: isDancing ? "catDance 0.8s ease-in-out infinite" : isFeeding ? "catEatBob 0.9s ease-in-out infinite" : "catwalk 8s ease-in-out 1s infinite" }}>
+    <div style={{ position:"absolute", width:32, height:28, zIndex:6, transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", animation: anim, ...posStyle }}>
       <div style={{ position:"absolute", top:0, left:3, width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderBottom:"9px solid " + fur }} />
       <div style={{ position:"absolute", top:0, right:3, width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderBottom:"9px solid " + fur }} />
       <div style={{ position:"absolute", top:2, left:5, width:0, height:0, borderLeft:"3px solid transparent", borderRight:"3px solid transparent", borderBottom:"5px solid " + dark + "55" }} />
