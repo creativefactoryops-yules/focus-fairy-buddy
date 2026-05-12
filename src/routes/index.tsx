@@ -22,14 +22,17 @@ const MOODS = [
     music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
 ];
 
-type PoseKey = "idle" | "work" | "dance" | "eat" | "feed";
+type PoseKey = "idle" | "work" | "dance" | "eat" | "feed" | "perch" | "pet" | "candle";
 
 const MSGS: Record<PoseKey, string[]> = {
-  idle:  ["Hey Yulia! Ready when you are ✨","I'm right here with you 💜","Take your time, I'm not going anywhere 🌸"],
-  work:  ["We're locked in together! 💪","You're doing so well 🧠","Stay in flow, I've got you ✨","One thing at a time 🌟"],
-  dance: ["BREAK TIME!! Shake it out!! 🎉","You earned this, dance it out! 💃","Mochi is vibing too 🐱🎵"],
-  eat:   ["Fuel up! You need this 🍜","Don't skip it — we're eating together! 🥣","Nourish that ADHD brain 🌸"],
-  feed:  ["Mochi is SO happy right now 🐱","Look at her go!! 🥰","She was waiting patiently 💜"],
+  idle:   ["Hey Yulia! Ready when you are ✨","I'm right here with you 💜","Take your time, I'm not going anywhere 🌸"],
+  work:   ["We're locked in together! 💪","You're doing so well 🧠","Stay in flow, I've got you ✨","One thing at a time 🌟"],
+  dance:  ["BREAK TIME!! Shake it out!! 🎉","You earned this, dance it out! 💃","Mochi is vibing too 🐱🎵"],
+  eat:    ["Fuel up! You need this 🍜","Don't skip it — we're eating together! 🥣","Nourish that ADHD brain 🌸"],
+  feed:   ["Mochi is SO happy right now 🐱","Look at her go!! 🥰","She was waiting patiently 💜"],
+  perch:  ["Mochi found her sunny spot 🌤️","Window watch mode activated 🐱","She's bird-watching, shhh 🍃"],
+  pet:    ["Pets pets pets 💜","Mochi is purring so loud 🐱✨","Soft kitty, warm kitty 🌸"],
+  candle: ["Candle lit — cozy mode on 🕯️","Tiny ritual, big calm ✨","Soft glow, soft brain 💛"],
 };
 
 const CSS = `
