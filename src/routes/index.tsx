@@ -620,6 +620,17 @@ function App() {
               <div style={{ textAlign:"center", fontSize:11, color:"rgba(255,255,255,0.25)", marginTop:7 }}>{md.desc}</div>
             </div>
           </div>
+
+          <footer style={{ marginTop:18, display:"flex", flexDirection:"column", alignItems:"center", gap:10, paddingBottom:6 }}>
+            <img src="/cf-logo.png" alt="CreativeFactory.studio" style={{ width:120, height:"auto", opacity:0.92, filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }} />
+            <a href="https://ko-fi.com/creativefactorystudio" target="_blank" rel="noopener noreferrer"
+              style={{ display:"inline-flex", alignItems:"center", gap:8, padding:"9px 16px", borderRadius:20, background:"#13C3FF", color:"#fff", fontWeight:700, fontSize:13, textDecoration:"none", boxShadow:"0 4px 14px rgba(19,195,255,0.4)", transition:"transform 0.18s ease" }}>
+              <span style={{ fontSize:15 }}>☕</span> Support on Ko-fi
+            </a>
+            <div style={{ fontSize:10, color:"rgba(255,255,255,0.32)", letterSpacing:0.4 }}>
+              made with 💜 by <span style={{ color: accent }}>CreativeFactory.studio</span>
+            </div>
+          </footer>
         </div>
       </main>
     </>
