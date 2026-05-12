@@ -165,7 +165,7 @@ function Cat({ pose, accent }: { pose: string; accent: string }) {
   );
 }
 
-function Room({ mood, pose, accent }: { mood: string; pose: string; accent: string }) {
+function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; accent: string; candleLit: boolean }) {
   const md = MOODS.find((m) => m.id === mood) || MOODS[0];
   const raining = mood === "storm", isWorking = pose === "work", isDancing = pose === "dance";
   return (
