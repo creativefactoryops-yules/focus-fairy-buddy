@@ -79,9 +79,11 @@ function Girl({ pose, accent }: { pose: string; accent: string }) {
   const skin = "#f5c5a3", hair = "#2d1b69", pants = "#374151";
   const isDancing = pose === "dance", isEating = pose === "eat";
   const isFeeding = pose === "feed",  isWorking = pose === "work";
+  const isPetting = pose === "pet",   isCandle = pose === "candle";
   const btm = isDancing ? "22%" : "15%";
+  const lean = isPetting ? "rotate(-14deg) translateX(-78%)" : "translateX(-82%)";
   return (
-    <div style={{ position:"absolute", bottom:btm, left:"50%", transform:"translateX(-82%)", width:38, zIndex:5, transition:"bottom 0.55s cubic-bezier(0.34,1.56,0.64,1)", animation: isDancing ? "girlSway 0.55s ease-in-out infinite" : "none" }}>
+    <div style={{ position:"absolute", bottom:btm, left:"50%", transform:lean, transformOrigin:"bottom center", width:38, zIndex:5, transition:"bottom 0.55s cubic-bezier(0.34,1.56,0.64,1), transform 0.4s ease", animation: isDancing ? "girlSway 0.55s ease-in-out infinite" : "none" }}>
       <div style={{ position:"absolute", top:0, left:2, width:34, height:20, background:hair, borderRadius:"50% 50% 0 0", zIndex:0 }} />
       <div style={{ position:"absolute", top:2, left:5, width:28, height:24, background:skin, borderRadius:"45% 45% 40% 40%", zIndex:2, animation: isDancing ? "headDance 0.55s ease-in-out infinite" : isWorking ? "headbob 2s ease-in-out infinite" : "breathe 3.5s ease-in-out infinite" }}>
         <div style={{ position:"absolute", top:9, left:5, width:5, height:5, background:"#1e1b4b", borderRadius:"50%", animation:"gblink 4.5s ease-in-out infinite" }} />
