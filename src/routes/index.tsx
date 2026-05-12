@@ -429,7 +429,10 @@ function App() {
   const resetFocus  = () => { setRunning(false); setElapsed(0); setPose("idle"); };
   const doDance = () => triggerPose("dance", 15, "💃 Dance break! Shake it out!");
   const doEat   = () => triggerPose("eat", 14, "🍜 Time to eat — fuel up!");
-  const doFeed  = () => triggerPose("feed", 12, "🐱 Feeding Mochi! She's so excited!");
+  const doFeed   = () => triggerPose("feed", 12, "🐱 Feeding Mochi! She's so excited!");
+  const doPerch  = () => triggerPose("perch", 22, "🌤️ Mochi's on the window perch");
+  const doPet    = () => triggerPose("pet", 14, "💜 Petting Mochi — purr engaged");
+  const doCandle = () => { setCandleLit(true); triggerPose("candle", 8, "🕯️ Candle lit — cozy ritual"); };
 
   const msgs = MSGS[pose] || MSGS.idle;
   const curMsg = msgs[msgIdx % msgs.length];
