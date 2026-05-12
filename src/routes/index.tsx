@@ -215,7 +215,26 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
         {/* signature corner */}
         <div style={{ position:"absolute", bottom:1, right:2, fontSize:4, color:"rgba(232,201,122,0.55)", fontStyle:"italic", letterSpacing:0.3 }}>Dalí</div>
       </div>
-      <div style={{ position:"absolute", top:"38%", left:"70%" }}>
+      {/* Framed monogram on the RIGHT wall — user's CreativeFactory mark */}
+      <div style={{ position:"absolute", top:"17%", right:"6%", width:28, height:28, background:"#f5e6c8", border:"2px solid #6b4a2a", borderRadius:2, boxShadow:"0 3px 8px rgba(0,0,0,0.5)", zIndex:1, padding:2, display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <img src="/cf-monogram.png" alt="CreativeFactory monogram" style={{ width:"100%", height:"100%", objectFit:"contain", filter:"drop-shadow(0 1px 0 rgba(0,0,0,0.15))" }} />
+      </div>
+      {/* Small abstract canvas above shelf */}
+      <div style={{ position:"absolute", top:"30%", right:"4%", width:22, height:14, background:"linear-gradient(135deg,#fbbf24 0%,#fbbf24 40%,#ec4899 40%,#ec4899 70%,#60a5fa 70%)", border:"1.5px solid #3b2a1a", borderRadius:1, zIndex:1, boxShadow:"0 2px 5px rgba(0,0,0,0.45)" }} />
+      {/* Hanging plant from ceiling — left side */}
+      <div style={{ position:"absolute", top:0, left:"22%", width:24, zIndex:2, transformOrigin:"top center", animation:"hangSway 5.5s ease-in-out infinite" }}>
+        <div style={{ width:1, height:18, background:"#6b4a2a", margin:"0 auto" }} />
+        <div style={{ position:"relative", width:24, height:10, margin:"-1px auto 0", background:"linear-gradient(to bottom,#b45309,#7c2d12)", borderRadius:"3px 3px 8px 8px", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.18)" }}>
+          <div style={{ position:"absolute", top:-1, left:0, right:0, height:2, background:"#92400e", borderRadius:1 }} />
+        </div>
+        {/* trailing vines */}
+        <div style={{ position:"absolute", top:24, left:1, width:5, height:18, background:"linear-gradient(to bottom,#16a34a,#15803d)", borderRadius:"40% 50% 50% 50%", transform:"rotate(-12deg)" }} />
+        <div style={{ position:"absolute", top:24, right:1, width:5, height:22, background:"linear-gradient(to bottom,#22c55e,#166534)", borderRadius:"50% 40% 50% 50%", transform:"rotate(10deg)" }} />
+        <div style={{ position:"absolute", top:22, left:9, width:6, height:14, background:"#15803d", borderRadius:"50%" }} />
+        <div style={{ position:"absolute", top:38, left:3, width:3, height:3, background:"#16a34a", borderRadius:"50%" }} />
+        <div style={{ position:"absolute", top:42, right:4, width:3, height:3, background:"#22c55e", borderRadius:"50%" }} />
+      </div>
+
         <div style={{ width:6, height:10, background:"#92400e", borderRadius:"2px 2px 0 0", marginLeft:3 }} />
         <div style={{ width:15, height:13, borderRadius:"60% 60% 40% 40%", background:"#166534", marginTop:-5 }} />
         <div style={{ width:10, height:10, borderRadius:"50%", background:"#15803d", marginTop:-5, marginLeft:3 }} />
