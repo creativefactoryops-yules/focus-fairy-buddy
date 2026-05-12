@@ -352,7 +352,8 @@ function App() {
   const [notif, setNotif] = useState({ text: "", id: 0 });
   const [msgIdx, setMsgIdx] = useState(0);
   const [muted, setMuted] = useState(false);
-  const [candleLit, setCandleLit] = useState(false);
+  const [candleLit, setCandleLit] = useState(true);
+  const candleAudioRef = useRef<{ ctx: AudioContext; gain: GainNode; stop: () => void } | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const poseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const msgRef = useRef<ReturnType<typeof setInterval> | null>(null);
