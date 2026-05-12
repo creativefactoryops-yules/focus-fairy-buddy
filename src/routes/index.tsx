@@ -67,7 +67,9 @@ const CSS = `
 @keyframes fadein    { from{opacity:0} to{opacity:1} }
 @keyframes notifPop  { 0%{opacity:0;transform:translateX(-50%) translateY(-16px)} 12%{opacity:1;transform:translateX(-50%) translateY(0)} 85%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-12px)} }
 @keyframes confettiFall { 0%{transform:translateY(-8px) rotate(0);opacity:1} 100%{transform:translateY(90px) rotate(400deg);opacity:0} }
-@keyframes flame      { 0%,100%{transform:translateX(-50%) scaleY(1) scaleX(1);opacity:1} 50%{transform:translateX(-50%) scaleY(1.15) scaleX(0.88);opacity:0.92} }
+@keyframes flame      { 0%{transform:translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg);opacity:1} 25%{transform:translateX(-50%) scaleY(1.18) scaleX(0.82) rotate(3deg);opacity:0.95} 50%{transform:translateX(-50%) scaleY(0.92) scaleX(1.1) rotate(-3deg);opacity:1} 75%{transform:translateX(-50%) scaleY(1.22) scaleX(0.78) rotate(2deg);opacity:0.88} 100%{transform:translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg);opacity:1} }
+@keyframes hangSway   { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+@keyframes flowerNod  { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
 @keyframes petArm     { 0%,100%{transform:rotate(70deg) translateY(4px)} 50%{transform:rotate(85deg) translateY(8px)} }
 @keyframes purrPaw    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
 @keyframes perchBreathe { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.92)} }
@@ -213,6 +215,25 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
         {/* signature corner */}
         <div style={{ position:"absolute", bottom:1, right:2, fontSize:4, color:"rgba(232,201,122,0.55)", fontStyle:"italic", letterSpacing:0.3 }}>Dalí</div>
       </div>
+      {/* Framed monogram on the RIGHT wall — user's CreativeFactory mark */}
+      <div style={{ position:"absolute", top:"17%", right:"6%", width:28, height:28, background:"#f5e6c8", border:"2px solid #6b4a2a", borderRadius:2, boxShadow:"0 3px 8px rgba(0,0,0,0.5)", zIndex:1, padding:2, display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <img src="/cf-monogram.png" alt="CreativeFactory monogram" style={{ width:"100%", height:"100%", objectFit:"contain", filter:"drop-shadow(0 1px 0 rgba(0,0,0,0.15))" }} />
+      </div>
+      {/* Small abstract canvas above shelf */}
+      <div style={{ position:"absolute", top:"30%", right:"4%", width:22, height:14, background:"linear-gradient(135deg,#fbbf24 0%,#fbbf24 40%,#ec4899 40%,#ec4899 70%,#60a5fa 70%)", border:"1.5px solid #3b2a1a", borderRadius:1, zIndex:1, boxShadow:"0 2px 5px rgba(0,0,0,0.45)" }} />
+      {/* Hanging plant from ceiling — left side */}
+      <div style={{ position:"absolute", top:0, left:"22%", width:24, zIndex:2, transformOrigin:"top center", animation:"hangSway 5.5s ease-in-out infinite" }}>
+        <div style={{ width:1, height:18, background:"#6b4a2a", margin:"0 auto" }} />
+        <div style={{ position:"relative", width:24, height:10, margin:"-1px auto 0", background:"linear-gradient(to bottom,#b45309,#7c2d12)", borderRadius:"3px 3px 8px 8px", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.18)" }}>
+          <div style={{ position:"absolute", top:-1, left:0, right:0, height:2, background:"#92400e", borderRadius:1 }} />
+        </div>
+        {/* trailing vines */}
+        <div style={{ position:"absolute", top:24, left:1, width:5, height:18, background:"linear-gradient(to bottom,#16a34a,#15803d)", borderRadius:"40% 50% 50% 50%", transform:"rotate(-12deg)" }} />
+        <div style={{ position:"absolute", top:24, right:1, width:5, height:22, background:"linear-gradient(to bottom,#22c55e,#166534)", borderRadius:"50% 40% 50% 50%", transform:"rotate(10deg)" }} />
+        <div style={{ position:"absolute", top:22, left:9, width:6, height:14, background:"#15803d", borderRadius:"50%" }} />
+        <div style={{ position:"absolute", top:38, left:3, width:3, height:3, background:"#16a34a", borderRadius:"50%" }} />
+        <div style={{ position:"absolute", top:42, right:4, width:3, height:3, background:"#22c55e", borderRadius:"50%" }} />
+      </div>
       <div style={{ position:"absolute", top:"38%", left:"70%" }}>
         <div style={{ width:6, height:10, background:"#92400e", borderRadius:"2px 2px 0 0", marginLeft:3 }} />
         <div style={{ width:15, height:13, borderRadius:"60% 60% 40% 40%", background:"#166534", marginTop:-5 }} />
@@ -297,6 +318,25 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
         </div>
       </div>
       <div style={{ position:"absolute", bottom:"1%", left:"18%", right:"18%", height:7, background: accent + "15", borderRadius:4, border:"1px solid " + accent + "22" }} />
+      {/* Throw pillows on the floor cushion */}
+      <div style={{ position:"absolute", bottom:"2.5%", left:"20%", width:14, height:9, background:"linear-gradient(135deg,#f472b6,#db2777)", borderRadius:"45% 45% 35% 35% / 50% 50% 40% 40%", border:"1px solid rgba(0,0,0,0.25)", boxShadow:"0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.22)", zIndex:2 }}>
+        <div style={{ position:"absolute", inset:"2px 3px", border:"1px dashed rgba(255,255,255,0.35)", borderRadius:4 }} />
+      </div>
+      <div style={{ position:"absolute", bottom:"2.5%", right:"21%", width:13, height:8, background:"linear-gradient(135deg,#fbbf24,#d97706)", borderRadius:"40% 40% 35% 35% / 55% 55% 40% 40%", border:"1px solid rgba(0,0,0,0.25)", boxShadow:"0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.22)", zIndex:2, transform:"rotate(-6deg)" }}>
+        <div style={{ position:"absolute", top:2, left:2, right:2, height:1, background:"rgba(255,255,255,0.35)", borderRadius:1 }} />
+      </div>
+      {/* Small vase of flowers on the desk (center-left of desk) */}
+      <div style={{ position:"absolute", bottom:"calc(24% + 16px)", left:"36%", width:10, height:18, zIndex:4 }}>
+        <div style={{ position:"absolute", bottom:0, left:1, width:8, height:7, background:"linear-gradient(to bottom,#a7f3d0,#34d399)", borderRadius:"30% 30% 50% 50%", boxShadow:"inset 0 -1px 0 rgba(0,0,0,0.2)" }} />
+        <div style={{ position:"absolute", bottom:6, left:0, width:10, height:1.5, background:"#10b981", borderRadius:1 }} />
+        <div style={{ position:"absolute", bottom:7, left:4, width:1, height:7, background:"#15803d" }} />
+        <div style={{ position:"absolute", bottom:7, left:2, width:1, height:5, background:"#16a34a", transform:"rotate(-12deg)", transformOrigin:"bottom" }} />
+        <div style={{ position:"absolute", bottom:7, right:2, width:1, height:6, background:"#16a34a", transform:"rotate(12deg)", transformOrigin:"bottom" }} />
+        {/* blossoms */}
+        <div style={{ position:"absolute", bottom:12, left:3, width:4, height:4, background:"#ec4899", borderRadius:"50%", boxShadow:"inset 0 0 0 1px #be185d", transformOrigin:"bottom center", animation:"flowerNod 4.2s ease-in-out infinite" }} />
+        <div style={{ position:"absolute", bottom:11, left:0, width:3.5, height:3.5, background:"#f59e0b", borderRadius:"50%", boxShadow:"inset 0 0 0 1px #b45309", transformOrigin:"bottom center", animation:"flowerNod 4.6s ease-in-out 0.4s infinite" }} />
+        <div style={{ position:"absolute", bottom:12, right:0, width:3.5, height:3.5, background:"#a78bfa", borderRadius:"50%", boxShadow:"inset 0 0 0 1px #6d28d9", transformOrigin:"bottom center", animation:"flowerNod 4.4s ease-in-out 0.8s infinite" }} />
+      </div>
       {isDancing && ["♪","♫","♩"].map((n, i) => (
         <div key={i} style={{ position:"absolute", top:"45%", left:(22 + i * 12) + "%", fontSize:13, color:accent, opacity:0, animation:"floatnote 2s ease-out " + (i * 0.75) + "s infinite" }}>{n}</div>
       ))}
@@ -352,7 +392,8 @@ function App() {
   const [notif, setNotif] = useState({ text: "", id: 0 });
   const [msgIdx, setMsgIdx] = useState(0);
   const [muted, setMuted] = useState(false);
-  const [candleLit, setCandleLit] = useState(false);
+  const [candleLit, setCandleLit] = useState(true);
+  const candleAudioRef = useRef<{ ctx: AudioContext; gain: GainNode; stop: () => void } | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const poseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const msgRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -423,6 +464,55 @@ function App() {
 
   useEffect(() => () => { audioRef.current?.pause(); audioRef.current = null; }, []);
 
+  // Candle flicker sound (synthesized — gentle whoosh + crackle while lit)
+  useEffect(() => {
+    if (!candleLit || muted) {
+      candleAudioRef.current?.stop();
+      candleAudioRef.current = null;
+      return;
+    }
+    if (candleAudioRef.current) return;
+    try {
+      const AC = (window.AudioContext || (window as any).webkitAudioContext);
+      const ctx: AudioContext = new AC();
+      const master = ctx.createGain();
+      master.gain.value = 0.0;
+      master.connect(ctx.destination);
+      // whoosh on light
+      const whoosh = ctx.createBufferSource();
+      const wb = ctx.createBuffer(1, ctx.sampleRate * 0.6, ctx.sampleRate);
+      const wd = wb.getChannelData(0);
+      for (let i = 0; i < wd.length; i++) wd[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.18));
+      whoosh.buffer = wb;
+      const wf = ctx.createBiquadFilter(); wf.type = "lowpass"; wf.frequency.value = 900;
+      const wg = ctx.createGain(); wg.gain.value = 0.25;
+      whoosh.connect(wf).connect(wg).connect(master);
+      whoosh.start();
+      // sustained crackle (filtered pink-ish noise w/ random gain bumps)
+      const noise = ctx.createBufferSource();
+      const nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+      const nd = nb.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * 0.5;
+      noise.buffer = nb; noise.loop = true;
+      const nf = ctx.createBiquadFilter(); nf.type = "bandpass"; nf.frequency.value = 1400; nf.Q.value = 0.8;
+      const ng = ctx.createGain(); ng.gain.value = 0.05;
+      noise.connect(nf).connect(ng).connect(master);
+      noise.start();
+      // fade in
+      master.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.4);
+      // random flicker LFO via setInterval
+      const flick = setInterval(() => {
+        ng.gain.setTargetAtTime(0.03 + Math.random() * 0.07, ctx.currentTime, 0.08);
+      }, 180);
+      candleAudioRef.current = {
+        ctx, gain: master,
+        stop: () => { clearInterval(flick); try { noise.stop(); } catch {} ctx.close(); },
+      };
+    } catch { /* audio unavailable */ }
+  }, [candleLit, muted]);
+
+  useEffect(() => () => { candleAudioRef.current?.stop(); }, []);
+
   const startFocus  = () => { setElapsed(0); setRunning(true); setPose("work"); showNotif("🧠 Focus started! We've got this!"); };
   const pauseFocus  = () => { setRunning(false); setPose("idle"); };
   const resumeFocus = () => { setRunning(true); setPose("work"); };
@@ -432,7 +522,7 @@ function App() {
   const doFeed   = () => triggerPose("feed", 12, "🐱 Feeding Mochi! She's so excited!");
   const doPerch  = () => triggerPose("perch", 22, "🌤️ Mochi's on the window perch");
   const doPet    = () => triggerPose("pet", 14, "💜 Petting Mochi — purr engaged");
-  const doCandle = () => { setCandleLit(true); triggerPose("candle", 8, "🕯️ Candle lit — cozy ritual"); };
+  const doCandle = () => { setCandleLit((v) => !v); triggerPose("candle", 8, candleLit ? "🌙 Candle out" : "🕯️ Candle lit — cozy ritual"); };
 
   const msgs = MSGS[pose] || MSGS.idle;
   const curMsg = msgs[msgIdx % msgs.length];
@@ -530,6 +620,17 @@ function App() {
               <div style={{ textAlign:"center", fontSize:11, color:"rgba(255,255,255,0.25)", marginTop:7 }}>{md.desc}</div>
             </div>
           </div>
+
+          <footer style={{ marginTop:18, display:"flex", flexDirection:"column", alignItems:"center", gap:10, paddingBottom:6 }}>
+            <img src="/cf-logo.png" alt="CreativeFactory.studio" style={{ width:120, height:"auto", opacity:0.92, filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }} />
+            <a href="https://ko-fi.com/creativefactorystudio" target="_blank" rel="noopener noreferrer"
+              style={{ display:"inline-flex", alignItems:"center", gap:8, padding:"9px 16px", borderRadius:20, background:"#13C3FF", color:"#fff", fontWeight:700, fontSize:13, textDecoration:"none", boxShadow:"0 4px 14px rgba(19,195,255,0.4)", transition:"transform 0.18s ease" }}>
+              <span style={{ fontSize:15 }}>☕</span> Support on Ko-fi
+            </a>
+            <div style={{ fontSize:10, color:"rgba(255,255,255,0.32)", letterSpacing:0.4 }}>
+              made with 💜 by <span style={{ color: accent }}>CreativeFactory.studio</span>
+            </div>
+          </footer>
         </div>
       </main>
     </>
