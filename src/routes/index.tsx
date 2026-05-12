@@ -424,6 +424,55 @@ function App() {
 
   useEffect(() => () => { audioRef.current?.pause(); audioRef.current = null; }, []);
 
+  // Candle flicker sound (synthesized — gentle whoosh + crackle while lit)
+  useEffect(() => {
+    if (!candleLit || muted) {
+      candleAudioRef.current?.stop();
+      candleAudioRef.current = null;
+      return;
+    }
+    if (candleAudioRef.current) return;
+    try {
+      const AC = (window.AudioContext || (window as any).webkitAudioContext);
+      const ctx: AudioContext = new AC();
+      const master = ctx.createGain();
+      master.gain.value = 0.0;
+      master.connect(ctx.destination);
+      // whoosh on light
+      const whoosh = ctx.createBufferSource();
+      const wb = ctx.createBuffer(1, ctx.sampleRate * 0.6, ctx.sampleRate);
+      const wd = wb.getChannelData(0);
+      for (let i = 0; i < wd.length; i++) wd[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.18));
+      whoosh.buffer = wb;
+      const wf = ctx.createBiquadFilter(); wf.type = "lowpass"; wf.frequency.value = 900;
+      const wg = ctx.createGain(); wg.gain.value = 0.25;
+      whoosh.connect(wf).connect(wg).connect(master);
+      whoosh.start();
+      // sustained crackle (filtered pink-ish noise w/ random gain bumps)
+      const noise = ctx.createBufferSource();
+      const nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+      const nd = nb.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * 0.5;
+      noise.buffer = nb; noise.loop = true;
+      const nf = ctx.createBiquadFilter(); nf.type = "bandpass"; nf.frequency.value = 1400; nf.Q.value = 0.8;
+      const ng = ctx.createGain(); ng.gain.value = 0.05;
+      noise.connect(nf).connect(ng).connect(master);
+      noise.start();
+      // fade in
+      master.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.4);
+      // random flicker LFO via setInterval
+      const flick = setInterval(() => {
+        ng.gain.setTargetAtTime(0.03 + Math.random() * 0.07, ctx.currentTime, 0.08);
+      }, 180);
+      candleAudioRef.current = {
+        ctx, gain: master,
+        stop: () => { clearInterval(flick); try { noise.stop(); } catch {} ctx.close(); },
+      };
+    } catch { /* audio unavailable */ }
+  }, [candleLit, muted]);
+
+  useEffect(() => () => { candleAudioRef.current?.stop(); }, []);
+
   const startFocus  = () => { setElapsed(0); setRunning(true); setPose("work"); showNotif("🧠 Focus started! We've got this!"); };
   const pauseFocus  = () => { setRunning(false); setPose("idle"); };
   const resumeFocus = () => { setRunning(true); setPose("work"); };
@@ -433,7 +482,7 @@ function App() {
   const doFeed   = () => triggerPose("feed", 12, "🐱 Feeding Mochi! She's so excited!");
   const doPerch  = () => triggerPose("perch", 22, "🌤️ Mochi's on the window perch");
   const doPet    = () => triggerPose("pet", 14, "💜 Petting Mochi — purr engaged");
-  const doCandle = () => { setCandleLit(true); triggerPose("candle", 8, "🕯️ Candle lit — cozy ritual"); };
+  const doCandle = () => { setCandleLit((v) => !v); triggerPose("candle", 8, candleLit ? "🌙 Candle out" : "🕯️ Candle lit — cozy ritual"); };
 
   const msgs = MSGS[pose] || MSGS.idle;
   const curMsg = msgs[msgIdx % msgs.length];
