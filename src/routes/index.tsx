@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -22,14 +22,17 @@ const MOODS = [
     music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
 ];
 
-type PoseKey = "idle" | "work" | "dance" | "eat" | "feed";
+type PoseKey = "idle" | "work" | "dance" | "eat" | "feed" | "perch" | "pet" | "candle";
 
 const MSGS: Record<PoseKey, string[]> = {
-  idle:  ["Hey Yulia! Ready when you are ✨","I'm right here with you 💜","Take your time, I'm not going anywhere 🌸"],
-  work:  ["We're locked in together! 💪","You're doing so well 🧠","Stay in flow, I've got you ✨","One thing at a time 🌟"],
-  dance: ["BREAK TIME!! Shake it out!! 🎉","You earned this, dance it out! 💃","Mochi is vibing too 🐱🎵"],
-  eat:   ["Fuel up! You need this 🍜","Don't skip it — we're eating together! 🥣","Nourish that ADHD brain 🌸"],
-  feed:  ["Mochi is SO happy right now 🐱","Look at her go!! 🥰","She was waiting patiently 💜"],
+  idle:   ["Hey Yulia! Ready when you are ✨","I'm right here with you 💜","Take your time, I'm not going anywhere 🌸"],
+  work:   ["We're locked in together! 💪","You're doing so well 🧠","Stay in flow, I've got you ✨","One thing at a time 🌟"],
+  dance:  ["BREAK TIME!! Shake it out!! 🎉","You earned this, dance it out! 💃","Mochi is vibing too 🐱🎵"],
+  eat:    ["Fuel up! You need this 🍜","Don't skip it — we're eating together! 🥣","Nourish that ADHD brain 🌸"],
+  feed:   ["Mochi is SO happy right now 🐱","Look at her go!! 🥰","She was waiting patiently 💜"],
+  perch:  ["Mochi found her sunny spot 🌤️","Window watch mode activated 🐱","She's bird-watching, shhh 🍃"],
+  pet:    ["Pets pets pets 💜","Mochi is purring so loud 🐱✨","Soft kitty, warm kitty 🌸"],
+  candle: ["Candle lit — cozy mode on 🕯️","Tiny ritual, big calm ✨","Soft glow, soft brain 💛"],
 };
 
 const CSS = `
@@ -64,6 +67,11 @@ const CSS = `
 @keyframes fadein    { from{opacity:0} to{opacity:1} }
 @keyframes notifPop  { 0%{opacity:0;transform:translateX(-50%) translateY(-16px)} 12%{opacity:1;transform:translateX(-50%) translateY(0)} 85%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-12px)} }
 @keyframes confettiFall { 0%{transform:translateY(-8px) rotate(0);opacity:1} 100%{transform:translateY(90px) rotate(400deg);opacity:0} }
+@keyframes flame      { 0%,100%{transform:translateX(-50%) scaleY(1) scaleX(1);opacity:1} 50%{transform:translateX(-50%) scaleY(1.15) scaleX(0.88);opacity:0.92} }
+@keyframes petArm     { 0%,100%{transform:rotate(70deg) translateY(4px)} 50%{transform:rotate(85deg) translateY(8px)} }
+@keyframes purrPaw    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
+@keyframes perchBreathe { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.92)} }
+@keyframes dripDali   { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(2px) scaleY(1.1)} }
 .bd-app button { font-family:inherit; }
 `;
 
@@ -71,9 +79,11 @@ function Girl({ pose, accent }: { pose: string; accent: string }) {
   const skin = "#f5c5a3", hair = "#2d1b69", pants = "#374151";
   const isDancing = pose === "dance", isEating = pose === "eat";
   const isFeeding = pose === "feed",  isWorking = pose === "work";
+  const isPetting = pose === "pet",   isCandle = pose === "candle";
   const btm = isDancing ? "22%" : "15%";
+  const lean = isPetting ? "rotate(-14deg) translateX(-78%)" : "translateX(-82%)";
   return (
-    <div style={{ position:"absolute", bottom:btm, left:"50%", transform:"translateX(-82%)", width:38, zIndex:5, transition:"bottom 0.55s cubic-bezier(0.34,1.56,0.64,1)", animation: isDancing ? "girlSway 0.55s ease-in-out infinite" : "none" }}>
+    <div style={{ position:"absolute", bottom:btm, left:"50%", transform:lean, transformOrigin:"bottom center", width:38, zIndex:5, transition:"bottom 0.55s cubic-bezier(0.34,1.56,0.64,1), transform 0.4s ease", animation: isDancing ? "girlSway 0.55s ease-in-out infinite" : "none" }}>
       <div style={{ position:"absolute", top:0, left:2, width:34, height:20, background:hair, borderRadius:"50% 50% 0 0", zIndex:0 }} />
       <div style={{ position:"absolute", top:2, left:5, width:28, height:24, background:skin, borderRadius:"45% 45% 40% 40%", zIndex:2, animation: isDancing ? "headDance 0.55s ease-in-out infinite" : isWorking ? "headbob 2s ease-in-out infinite" : "breathe 3.5s ease-in-out infinite" }}>
         <div style={{ position:"absolute", top:9, left:5, width:5, height:5, background:"#1e1b4b", borderRadius:"50%", animation:"gblink 4.5s ease-in-out infinite" }} />
@@ -87,9 +97,9 @@ function Girl({ pose, accent }: { pose: string; accent: string }) {
       <div style={{ position:"absolute", top:2, left:3, width:14, height:10, background:hair, borderRadius:"50% 30% 40% 50%", zIndex:3 }} />
       <div style={{ position:"absolute", top:1, left:16, width:9, height:7, background:hair, borderRadius:"30% 50% 50% 30%", zIndex:3 }} />
       <div style={{ position:"absolute", top:4, right:0, width:8, height:16, background:hair, borderRadius:"40% 60% 60% 40%", zIndex:1, transformOrigin:"top center", animation: isDancing ? "ponyDance 0.4s ease-in-out infinite" : "ponyIdle 3s ease-in-out infinite" }} />
-      <div style={{ position:"absolute", top: isDancing ? 30 : 26, left: isDancing ? -5 : 0, width:6, height:16, background:skin, borderRadius:4, zIndex:1, transformOrigin: isDancing ? "bottom center" : "top center", animation: isDancing ? "waveL 0.52s ease-in-out infinite" : isFeeding ? "reachL 1.4s ease-in-out infinite" : isWorking ? "typeL 0.38s ease-in-out infinite" : "none", transition:"top 0.4s ease,left 0.4s ease" }} />
+      <div style={{ position:"absolute", top: isDancing ? 30 : 26, left: isDancing ? -5 : 0, width:6, height: isPetting ? 18 : 16, background:skin, borderRadius:4, zIndex:1, transformOrigin: isDancing || isPetting ? "top center" : "top center", animation: isDancing ? "waveL 0.52s ease-in-out infinite" : isFeeding ? "reachL 1.4s ease-in-out infinite" : isPetting ? "petArm 1.2s ease-in-out infinite" : isWorking ? "typeL 0.38s ease-in-out infinite" : "none", transition:"top 0.4s ease,left 0.4s ease" }} />
       <div style={{ position:"absolute", top:24, left:4, width:30, height:20, background: accent + "cc", borderRadius:"20% 20% 10% 10%", zIndex:2, animation:"breathe 3s ease-in-out infinite" }} />
-      <div style={{ position:"absolute", top: isDancing ? 30 : 26, right: isDancing ? -5 : 0, width:6, height: isEating ? 18 : 16, background:skin, borderRadius:4, zIndex:1, transformOrigin: isDancing || isEating ? "bottom center" : "top center", animation: isDancing ? "waveR 0.52s ease-in-out 0.26s infinite" : isEating ? "eatArm 1.1s ease-in-out infinite" : isWorking ? "typeR 0.38s ease-in-out 0.19s infinite" : "none", transition:"top 0.4s ease,right 0.4s ease" }} />
+      <div style={{ position:"absolute", top: isDancing ? 30 : 26, right: isDancing ? -5 : 0, width:6, height: isEating ? 18 : isCandle ? 18 : 16, background:skin, borderRadius:4, zIndex:1, transformOrigin: isDancing || isEating || isCandle ? "bottom center" : "top center", animation: isDancing ? "waveR 0.52s ease-in-out 0.26s infinite" : isEating ? "eatArm 1.1s ease-in-out infinite" : isCandle ? "reachL 1.6s ease-in-out infinite" : isWorking ? "typeR 0.38s ease-in-out 0.19s infinite" : "none", transition:"top 0.4s ease,right 0.4s ease" }} />
       {isEating && <div style={{ position:"absolute", top:26, right:0, width:2, height:14, background:"#9ca3af", borderRadius:1, transformOrigin:"bottom center", animation:"eatArm 1.1s ease-in-out infinite", zIndex:6 }} />}
       <div style={{ position:"absolute", top:42, left:4, width:30, height: isDancing ? 18 : 13, background:pants, borderRadius:"0 0 8px 8px", zIndex:2, transition:"height 0.4s ease" }} />
       {isDancing && <>
@@ -118,9 +128,20 @@ function Girl({ pose, accent }: { pose: string; accent: string }) {
 function Cat({ pose, accent }: { pose: string; accent: string }) {
   const fur = "#d4a0d4", dark = "#9b6b9b";
   const isDancing = pose === "dance", isFeeding = pose === "feed";
-  const btm = isDancing || isFeeding ? "18%" : "26%";
+  const isPerch = pose === "perch", isPet = pose === "pet";
+  // position overrides for special poses
+  const posStyle: React.CSSProperties = isPerch
+    ? { top:"15.5%", left:"50%", transform:"translateX(-50%)", bottom:"auto" }
+    : isPet
+    ? { bottom:"15%", left:"32%" }
+    : { bottom: isDancing || isFeeding ? "18%" : "26%", left:"18%" };
+  const anim = isDancing ? "catDance 0.8s ease-in-out infinite"
+    : isFeeding ? "catEatBob 0.9s ease-in-out infinite"
+    : isPerch ? "perchBreathe 3.4s ease-in-out infinite"
+    : isPet ? "purrPaw 0.5s ease-in-out infinite"
+    : "catwalk 8s ease-in-out 1s infinite";
   return (
-    <div style={{ position:"absolute", bottom:btm, left:"18%", width:32, height:28, zIndex:4, transition:"bottom 0.5s ease", animation: isDancing ? "catDance 0.8s ease-in-out infinite" : isFeeding ? "catEatBob 0.9s ease-in-out infinite" : "catwalk 8s ease-in-out 1s infinite" }}>
+    <div style={{ position:"absolute", width:32, height:28, zIndex:6, transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", animation: anim, ...posStyle }}>
       <div style={{ position:"absolute", top:0, left:3, width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderBottom:"9px solid " + fur }} />
       <div style={{ position:"absolute", top:0, right:3, width:0, height:0, borderLeft:"5px solid transparent", borderRight:"5px solid transparent", borderBottom:"9px solid " + fur }} />
       <div style={{ position:"absolute", top:2, left:5, width:0, height:0, borderLeft:"3px solid transparent", borderRight:"3px solid transparent", borderBottom:"5px solid " + dark + "55" }} />
@@ -144,7 +165,7 @@ function Cat({ pose, accent }: { pose: string; accent: string }) {
   );
 }
 
-function Room({ mood, pose, accent }: { mood: string; pose: string; accent: string }) {
+function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; accent: string; candleLit: boolean }) {
   const md = MOODS.find((m) => m.id === mood) || MOODS[0];
   const raining = mood === "storm", isWorking = pose === "work", isDancing = pose === "dance";
   return (
@@ -167,6 +188,31 @@ function Room({ mood, pose, accent }: { mood: string; pose: string; accent: stri
         <div style={{ position:"absolute", top:0, left:0, width:14, height:"100%", background:"linear-gradient(to right,rgba(124,58,237,0.15),transparent)" }} />
         <div style={{ position:"absolute", top:0, right:0, width:14, height:"100%", background:"linear-gradient(to left,rgba(124,58,237,0.15),transparent)" }} />
       </div>
+      {/* Window perch shelf — wooden ledge below window for Mochi */}
+      <div style={{ position:"absolute", top:"calc(5% + 74px - 2px)", left:"50%", transform:"translateX(-50%)", width:104, height:6, background:"#6b4a2a", borderRadius:"2px 2px 1px 1px", boxShadow:"0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)", zIndex:3 }}>
+        <div style={{ position:"absolute", top:0, left:0, right:0, height:1.5, background:"#8a6438" }} />
+        {/* tiny cushion on perch */}
+        <div style={{ position:"absolute", top:-3, left:"50%", transform:"translateX(-50%)", width:38, height:4, background: accent + "44", borderRadius:3, border:"1px solid " + accent + "55" }} />
+      </div>
+      {/* Salvador Dali — Persistence of Memory homage (melting clock) */}
+      <div style={{ position:"absolute", top:"16%", left:"6%", width:30, height:26, background:"#2a1a0d", border:"2px solid #6b4a2a", borderRadius:2, boxShadow:"0 3px 8px rgba(0,0,0,0.55), inset 0 0 6px rgba(0,0,0,0.6)", zIndex:1, overflow:"hidden" }}>
+        {/* surreal sky */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,#d4a574 0%,#c97f4a 45%,#3a2418 70%,#1a0f08 100%)" }} />
+        {/* distant horizon line */}
+        <div style={{ position:"absolute", top:"55%", left:0, right:0, height:1, background:"rgba(0,0,0,0.4)" }} />
+        {/* melting clock draped over branch */}
+        <div style={{ position:"absolute", top:7, left:5, width:14, height:8, background:"#e8c97a", borderRadius:"50% 50% 50% 50% / 60% 60% 40% 40%", boxShadow:"inset 0 -2px 0 rgba(0,0,0,0.25)", transform:"rotate(-8deg)" }}>
+          <div style={{ position:"absolute", top:1.5, left:5, width:1, height:3, background:"#1a0f08" }} />
+          <div style={{ position:"absolute", top:3, left:5, width:3, height:1, background:"#1a0f08" }} />
+        </div>
+        {/* drip */}
+        <div style={{ position:"absolute", top:13, left:9, width:3, height:6, background:"#e8c97a", borderRadius:"40% 40% 50% 50%", transformOrigin:"top center", animation:"dripDali 3.4s ease-in-out infinite" }} />
+        {/* second smaller clock on a cube */}
+        <div style={{ position:"absolute", top:14, right:4, width:5, height:5, background:"#b3994a", borderRadius:"50%", transform:"rotate(20deg)" }} />
+        <div style={{ position:"absolute", top:18, right:4, width:5, height:3, background:"#3a2418" }} />
+        {/* signature corner */}
+        <div style={{ position:"absolute", bottom:1, right:2, fontSize:4, color:"rgba(232,201,122,0.55)", fontStyle:"italic", letterSpacing:0.3 }}>Dalí</div>
+      </div>
       <div style={{ position:"absolute", top:"38%", left:"70%" }}>
         <div style={{ width:6, height:10, background:"#92400e", borderRadius:"2px 2px 0 0", marginLeft:3 }} />
         <div style={{ width:15, height:13, borderRadius:"60% 60% 40% 40%", background:"#166534", marginTop:-5 }} />
@@ -188,6 +234,40 @@ function Room({ mood, pose, accent }: { mood: string; pose: string; accent: stri
       <div style={{ position:"absolute", bottom:"28%", left:0, right:0, height:2, background:"rgba(0,0,0,0.3)" }} />
       <div style={{ position:"absolute", bottom:"24%", left:"9%", right:"9%", height:17, background:"#4b3b2a", borderRadius:"3px 3px 0 0", boxShadow:"0 4px 16px rgba(0,0,0,0.5)" }} />
       <div style={{ position:"absolute", bottom:"24%", left:"9%", right:"9%", height:3, background:"#5c4a35", borderRadius:"3px 3px 0 0" }} />
+      {/* Money tree (pachira) on left side of desk */}
+      <div style={{ position:"absolute", bottom:"calc(24% + 16px)", left:"14%", width:18, height:22, zIndex:3 }}>
+        {/* terracotta pot */}
+        <div style={{ position:"absolute", bottom:0, left:2, width:14, height:8, background:"linear-gradient(to bottom,#b45309,#7c2d12)", borderRadius:"1px 1px 3px 3px", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.15)" }} />
+        <div style={{ position:"absolute", bottom:7, left:1, width:16, height:2, background:"#92400e", borderRadius:1 }} />
+        {/* braided trunk */}
+        <div style={{ position:"absolute", bottom:8, left:8, width:2, height:6, background:"#3f2410", borderRadius:1 }} />
+        <div style={{ position:"absolute", bottom:8, left:8, width:2, height:6, background:"#5a3418", borderRadius:1, transform:"skewX(-15deg)" }} />
+        {/* lush canopy */}
+        <div style={{ position:"absolute", bottom:11, left:0, width:9, height:9, background:"#15803d", borderRadius:"60% 50% 50% 60%" }} />
+        <div style={{ position:"absolute", bottom:12, left:6, width:11, height:10, background:"#16a34a", borderRadius:"50% 60% 55% 50%" }} />
+        <div style={{ position:"absolute", bottom:15, left:3, width:9, height:8, background:"#22c55e", borderRadius:"50% 60% 50% 60%" }} />
+        <div style={{ position:"absolute", bottom:14, left:10, width:6, height:6, background:"#166534", borderRadius:"50%" }} />
+        {/* lucky red ribbon */}
+        <div style={{ position:"absolute", bottom:8, left:6, width:6, height:1.5, background:"#dc2626", borderRadius:1 }} />
+      </div>
+      {/* Candle on right side of desk */}
+      <div style={{ position:"absolute", bottom:"calc(24% + 16px)", right:"16%", width:12, height:20, zIndex:3 }}>
+        {/* saucer */}
+        <div style={{ position:"absolute", bottom:0, left:0, width:12, height:2, background:"#1f1f1f", borderRadius:"50%" }} />
+        {/* candle body */}
+        <div style={{ position:"absolute", bottom:1, left:2, width:8, height:12, background:"linear-gradient(to right,#f5e6c8,#d9c08a,#f5e6c8)", borderRadius:"1px 1px 0 0", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.4), inset -1px 0 0 rgba(0,0,0,0.18)" }} />
+        {/* melted top */}
+        <div style={{ position:"absolute", bottom:13, left:2, width:8, height:2, background:"#e8d4a0", borderRadius:"50%" }} />
+        {/* wick */}
+        <div style={{ position:"absolute", bottom:13, left:5.5, width:1, height: candleLit ? 1.5 : 3, background:"#1a1a1a" }} />
+        {/* flame */}
+        {candleLit && (
+          <>
+            <div style={{ position:"absolute", bottom:14, left:"50%", width:4, height:7, background:"radial-gradient(ellipse at center bottom,#fff4a3 10%,#fbbf24 50%,#f97316 85%)", borderRadius:"50% 50% 40% 40% / 70% 70% 30% 30%", transformOrigin:"bottom center", animation:"flame 0.32s ease-in-out infinite", boxShadow:"0 0 8px #fbbf24cc, 0 0 16px #f9731688" }} />
+            <div style={{ position:"absolute", bottom:13, left:"50%", transform:"translateX(-50%)", width:14, height:14, background:"radial-gradient(circle,#fbbf2433 0%,transparent 70%)", borderRadius:"50%", pointerEvents:"none" }} />
+          </>
+        )}
+      </div>
       <div style={{ position:"absolute", bottom:0, left:"13%", width:8, height:"25%", background:"#3b2a1a", borderRadius:"0 0 3px 3px" }} />
       <div style={{ position:"absolute", bottom:0, right:"13%", width:8, height:"25%", background:"#3b2a1a", borderRadius:"0 0 3px 3px" }} />
       <div style={{ position:"absolute", bottom:"37%", left:"50%", transform:"translateX(-50%)", width:46, height:32, background:"#111", borderRadius:3, border:"2px solid #374151", animation:"screenglo 3s ease-in-out infinite", boxShadow:"0 0 12px " + accent + "55" }}>
@@ -272,6 +352,7 @@ function App() {
   const [notif, setNotif] = useState({ text: "", id: 0 });
   const [msgIdx, setMsgIdx] = useState(0);
   const [muted, setMuted] = useState(false);
+  const [candleLit, setCandleLit] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const poseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const msgRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -348,7 +429,10 @@ function App() {
   const resetFocus  = () => { setRunning(false); setElapsed(0); setPose("idle"); };
   const doDance = () => triggerPose("dance", 15, "💃 Dance break! Shake it out!");
   const doEat   = () => triggerPose("eat", 14, "🍜 Time to eat — fuel up!");
-  const doFeed  = () => triggerPose("feed", 12, "🐱 Feeding Mochi! She's so excited!");
+  const doFeed   = () => triggerPose("feed", 12, "🐱 Feeding Mochi! She's so excited!");
+  const doPerch  = () => triggerPose("perch", 22, "🌤️ Mochi's on the window perch");
+  const doPet    = () => triggerPose("pet", 14, "💜 Petting Mochi — purr engaged");
+  const doCandle = () => { setCandleLit(true); triggerPose("candle", 8, "🕯️ Candle lit — cozy ritual"); };
 
   const msgs = MSGS[pose] || MSGS.idle;
   const curMsg = msgs[msgIdx % msgs.length];
@@ -365,7 +449,7 @@ function App() {
 
           <div style={{ position:"relative", width:"100%", paddingTop:"60%", borderRadius:"20px 20px 0 0", overflow:"hidden", border:"1px solid rgba(255,255,255,0.07)", borderBottom:"none", boxShadow:"0 -4px 24px rgba(0,0,0,0.5)" }}>
             <div style={{ position:"absolute", inset:0 }}>
-              <Room mood={mood} pose={pose} accent={accent} />
+              <Room mood={mood} pose={pose} accent={accent} candleLit={candleLit} />
               <Girl pose={pose} accent={accent} />
               <Cat pose={pose} accent={accent} />
               <Confetti active={pose === "dance"} accent={accent} />
@@ -411,10 +495,17 @@ function App() {
               </div>
             </div>
 
-            <div style={{ display:"flex", gap:7, marginBottom:13 }}>
-              {[{ label: "💃 Dance break", fn: doDance }, { label: "🍜 Eat!", fn: doEat }, { label: "🐱 Feed Mochi", fn: doFeed }].map((btn) => (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6, marginBottom:13 }}>
+              {[
+                { label: "💃 Dance", fn: doDance },
+                { label: "🍜 Eat", fn: doEat },
+                { label: "🐱 Feed", fn: doFeed },
+                { label: "💜 Pet Mochi", fn: doPet },
+                { label: "🌤️ Window perch", fn: doPerch },
+                { label: candleLit ? "🕯️ Candle ✓" : "🕯️ Light candle", fn: doCandle },
+              ].map((btn) => (
                 <button key={btn.label} onClick={btn.fn}
-                  style={{ flex:1, padding:"9px 4px", borderRadius:11, border:"1px solid rgba(255,255,255,0.09)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:11, fontWeight:600, cursor:"pointer", lineHeight:1.3, transition:"all 0.2s ease" }}>
+                  style={{ padding:"9px 4px", borderRadius:11, border:"1px solid rgba(255,255,255,0.09)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:10.5, fontWeight:600, cursor:"pointer", lineHeight:1.3, transition:"all 0.2s ease" }}>
                   {btn.label}
                 </button>
               ))}
