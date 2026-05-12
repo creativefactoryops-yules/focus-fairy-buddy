@@ -318,6 +318,25 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
         </div>
       </div>
       <div style={{ position:"absolute", bottom:"1%", left:"18%", right:"18%", height:7, background: accent + "15", borderRadius:4, border:"1px solid " + accent + "22" }} />
+      {/* Throw pillows on the floor cushion */}
+      <div style={{ position:"absolute", bottom:"2.5%", left:"20%", width:14, height:9, background:"linear-gradient(135deg,#f472b6,#db2777)", borderRadius:"45% 45% 35% 35% / 50% 50% 40% 40%", border:"1px solid rgba(0,0,0,0.25)", boxShadow:"0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.22)", zIndex:2 }}>
+        <div style={{ position:"absolute", inset:"2px 3px", border:"1px dashed rgba(255,255,255,0.35)", borderRadius:4 }} />
+      </div>
+      <div style={{ position:"absolute", bottom:"2.5%", right:"21%", width:13, height:8, background:"linear-gradient(135deg,#fbbf24,#d97706)", borderRadius:"40% 40% 35% 35% / 55% 55% 40% 40%", border:"1px solid rgba(0,0,0,0.25)", boxShadow:"0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.22)", zIndex:2, transform:"rotate(-6deg)" }}>
+        <div style={{ position:"absolute", top:2, left:2, right:2, height:1, background:"rgba(255,255,255,0.35)", borderRadius:1 }} />
+      </div>
+      {/* Small vase of flowers on the desk (center-left of desk) */}
+      <div style={{ position:"absolute", bottom:"calc(24% + 16px)", left:"36%", width:10, height:18, zIndex:4 }}>
+        <div style={{ position:"absolute", bottom:0, left:1, width:8, height:7, background:"linear-gradient(to bottom,#a7f3d0,#34d399)", borderRadius:"30% 30% 50% 50%", boxShadow:"inset 0 -1px 0 rgba(0,0,0,0.2)" }} />
+        <div style={{ position:"absolute", bottom:6, left:0, width:10, height:1.5, background:"#10b981", borderRadius:1 }} />
+        <div style={{ position:"absolute", bottom:7, left:4, width:1, height:7, background:"#15803d" }} />
+        <div style={{ position:"absolute", bottom:7, left:2, width:1, height:5, background:"#16a34a", transform:"rotate(-12deg)", transformOrigin:"bottom" }} />
+        <div style={{ position:"absolute", bottom:7, right:2, width:1, height:6, background:"#16a34a", transform:"rotate(12deg)", transformOrigin:"bottom" }} />
+        {/* blossoms */}
+        <div style={{ position:"absolute", bottom:12, left:3, width:4, height:4, background:"#ec4899", borderRadius:"50%", boxShadow:"inset 0 0 0 1px #be185d", transformOrigin:"bottom center", animation:"flowerNod 4.2s ease-in-out infinite" }} />
+        <div style={{ position:"absolute", bottom:11, left:0, width:3.5, height:3.5, background:"#f59e0b", borderRadius:"50%", boxShadow:"inset 0 0 0 1px #b45309", transformOrigin:"bottom center", animation:"flowerNod 4.6s ease-in-out 0.4s infinite" }} />
+        <div style={{ position:"absolute", bottom:12, right:0, width:3.5, height:3.5, background:"#a78bfa", borderRadius:"50%", boxShadow:"inset 0 0 0 1px #6d28d9", transformOrigin:"bottom center", animation:"flowerNod 4.4s ease-in-out 0.8s infinite" }} />
+      </div>
       {isDancing && ["♪","♫","♩"].map((n, i) => (
         <div key={i} style={{ position:"absolute", top:"45%", left:(22 + i * 12) + "%", fontSize:13, color:accent, opacity:0, animation:"floatnote 2s ease-out " + (i * 0.75) + "s infinite" }}>{n}</div>
       ))}
