@@ -351,6 +351,15 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
       {isDancing && ["♪","♫","♩"].map((n, i) => (
         <div key={i} style={{ position:"absolute", top:"45%", left:(22 + i * 12) + "%", fontSize:13, color:accent, opacity:0, animation:"floatnote 2s ease-out " + (i * 0.75) + "s infinite" }}>{n}</div>
       ))}
+      {pose === "pet" && ["💜","💕","💖","✨","💜"].map((h, i) => (
+        <div key={"h"+i} style={{ position:"absolute", bottom:"32%", left:(28 + i * 4) + "%", fontSize:12, opacity:0, ["--dx" as any]: ((i % 2 ? 1 : -1) * (6 + i * 3)) + "px", animation:"heartFloat 1.6s ease-out " + (i * 0.32) + "s infinite" }}>{h}</div>
+      ))}
+      {pose === "candle" && Array.from({ length: 6 }, (_, i) => (
+        <div key={"sp"+i} style={{ position:"absolute", bottom:"30%", right:(14 + (i % 3) * 3) + "%", width:3, height:3, borderRadius:"50%", background:"#fde68a", boxShadow:"0 0 6px #fbbf24", opacity:0, animation:"candleSparkle 1.4s ease-out " + (i * 0.22) + "s infinite" }} />
+      ))}
+      {candleLit && (
+        <div style={{ position:"absolute", bottom:"calc(24% + 26px)", right:"15%", width:18, height:18, borderRadius:"50%", animation:"candleGlow 2.4s ease-in-out infinite", pointerEvents:"none" }} />
+      )}
     </>
   );
 }
