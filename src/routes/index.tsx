@@ -12,14 +12,15 @@ export const Route = createFileRoute("/")({
 });
 
 const MOODS = [
-  { id: "focus", label: "Focus", bg: "#0c160c", sky: "#07100a", accent: "#4ade80", desc: "Deep work 🌿",
-    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-  { id: "chill", label: "Chill", bg: "#0e0e1e", sky: "#080812", accent: "#818cf8", desc: "Easy flow 🌙",
-    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+  // Music: free / royalty-free CC tracks (Kevin MacLeod – incompetech.com)
+  { id: "focus", label: "Focus", bg: "#0c160c", sky: "#07100a", accent: "#4ade80", desc: "Classical · deep work 🌿",
+    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Air%20Prelude.mp3" },
+  { id: "chill", label: "Chill", bg: "#0e0e1e", sky: "#080812", accent: "#818cf8", desc: "Jazz · easy flow 🌙",
+    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bossa%20Antigua.mp3" },
   { id: "storm", label: "Storm", bg: "#0b1018", sky: "#070c10", accent: "#60a5fa", desc: "Power ⚡",
     music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
-  { id: "cozy",  label: "Cozy",  bg: "#180f08", sky: "#100800", accent: "#fb923c", desc: "Warm 🕯️",
-    music: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
+  { id: "cozy",  label: "Cozy",  bg: "#180f08", sky: "#100800", accent: "#fb923c", desc: "Hip-hop · warm 🕯️",
+    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/George%20Street%20Shuffle.mp3" },
 ];
 
 type PoseKey = "idle" | "work" | "dance" | "eat" | "feed" | "perch" | "pet" | "candle";
@@ -70,11 +71,21 @@ const CSS = `
 @keyframes flame      { 0%{transform:translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg);opacity:1} 25%{transform:translateX(-50%) scaleY(1.18) scaleX(0.82) rotate(3deg);opacity:0.95} 50%{transform:translateX(-50%) scaleY(0.92) scaleX(1.1) rotate(-3deg);opacity:1} 75%{transform:translateX(-50%) scaleY(1.22) scaleX(0.78) rotate(2deg);opacity:0.88} 100%{transform:translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg);opacity:1} }
 @keyframes hangSway   { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
 @keyframes flowerNod  { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
-@keyframes petArm     { 0%,100%{transform:rotate(70deg) translateY(4px)} 50%{transform:rotate(85deg) translateY(8px)} }
-@keyframes purrPaw    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
-@keyframes perchBreathe { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.92)} }
+@keyframes petArm     { 0%,100%{transform:rotate(60deg) translateY(2px)} 25%{transform:rotate(95deg) translateY(10px)} 75%{transform:rotate(78deg) translateY(6px)} }
+@keyframes purrPaw    { 0%,100%{transform:translateY(0) rotate(0)} 25%{transform:translateY(-3px) rotate(-2deg)} 75%{transform:translateY(-1px) rotate(2deg)} }
+@keyframes perchBreathe { 0%,100%{transform:scaleY(1) translateY(0)} 30%{transform:scaleY(0.92) translateY(2px)} 60%{transform:scaleY(1.05) translateY(-2px)} }
+@keyframes perchEar     { 0%,100%{transform:rotate(0)} 40%{transform:rotate(-12deg)} 80%{transform:rotate(8deg)} }
 @keyframes dripDali   { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(2px) scaleY(1.1)} }
+@keyframes heartFloat { 0%{opacity:0;transform:translate(0,0) scale(0.6)} 18%{opacity:1} 100%{opacity:0;transform:translate(var(--dx,8px),-38px) scale(1.1)} }
+@keyframes candleSparkle { 0%{opacity:0;transform:translateY(0) scale(0.4)} 30%{opacity:1} 100%{opacity:0;transform:translateY(-22px) scale(1.1)} }
+@keyframes candleGlow { 0%,100%{box-shadow:0 0 14px rgba(251,191,36,0.45)} 50%{box-shadow:0 0 26px rgba(251,191,36,0.85)} }
+@keyframes girlReachSwing { 0%,100%{transform:rotate(40deg) translateY(2px)} 50%{transform:rotate(70deg) translateY(10px)} }
+@keyframes wmDrift   { 0%{background-position:0 0} 100%{background-position:240px -240px} }
 .bd-app button { font-family:inherit; }
+.bd-app .wm { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.055; mix-blend-mode:overlay;
+  background-image: repeating-linear-gradient(135deg, transparent 0 220px, rgba(255,255,255,0.4) 220px 240px),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='80' viewBox='0 0 320 80'><text x='0' y='52' font-family='Georgia,serif' font-style='italic' font-weight='700' font-size='34' fill='white' letter-spacing='2'>bodydoubleCFS bodydoubleCFS</text></svg>");
+  background-size: auto, 320px 80px; background-repeat: repeat; transform: rotate(-14deg) scale(1.4); transform-origin:center; animation: wmDrift 60s linear infinite; }
 `;
 
 function Girl({ pose, accent }: { pose: string; accent: string }) {
@@ -99,9 +110,9 @@ function Girl({ pose, accent }: { pose: string; accent: string }) {
       <div style={{ position:"absolute", top:2, left:3, width:14, height:10, background:hair, borderRadius:"50% 30% 40% 50%", zIndex:3 }} />
       <div style={{ position:"absolute", top:1, left:16, width:9, height:7, background:hair, borderRadius:"30% 50% 50% 30%", zIndex:3 }} />
       <div style={{ position:"absolute", top:4, right:0, width:8, height:16, background:hair, borderRadius:"40% 60% 60% 40%", zIndex:1, transformOrigin:"top center", animation: isDancing ? "ponyDance 0.4s ease-in-out infinite" : "ponyIdle 3s ease-in-out infinite" }} />
-      <div style={{ position:"absolute", top: isDancing ? 30 : 26, left: isDancing ? -5 : 0, width:6, height: isPetting ? 18 : 16, background:skin, borderRadius:4, zIndex:1, transformOrigin: isDancing || isPetting ? "top center" : "top center", animation: isDancing ? "waveL 0.52s ease-in-out infinite" : isFeeding ? "reachL 1.4s ease-in-out infinite" : isPetting ? "petArm 1.2s ease-in-out infinite" : isWorking ? "typeL 0.38s ease-in-out infinite" : "none", transition:"top 0.4s ease,left 0.4s ease" }} />
-      <div style={{ position:"absolute", top:24, left:4, width:30, height:20, background: accent + "cc", borderRadius:"20% 20% 10% 10%", zIndex:2, animation:"breathe 3s ease-in-out infinite" }} />
-      <div style={{ position:"absolute", top: isDancing ? 30 : 26, right: isDancing ? -5 : 0, width:6, height: isEating ? 18 : isCandle ? 18 : 16, background:skin, borderRadius:4, zIndex:1, transformOrigin: isDancing || isEating || isCandle ? "bottom center" : "top center", animation: isDancing ? "waveR 0.52s ease-in-out 0.26s infinite" : isEating ? "eatArm 1.1s ease-in-out infinite" : isCandle ? "reachL 1.6s ease-in-out infinite" : isWorking ? "typeR 0.38s ease-in-out 0.19s infinite" : "none", transition:"top 0.4s ease,right 0.4s ease" }} />
+      <div style={{ position:"absolute", top: isDancing ? 30 : 26, left: isDancing ? -5 : 0, width:6, height: isPetting ? 18 : 16, background:skin, borderRadius:4, zIndex:1, transformOrigin: isDancing || isPetting ? "top center" : "top center", animation: isDancing ? "waveL 0.52s ease-in-out infinite" : isFeeding ? "reachL 1.4s ease-in-out infinite" : isPetting ? "petArm 0.65s ease-in-out infinite" : isWorking ? "typeL 0.38s ease-in-out infinite" : "none", transition:"top 0.4s ease,left 0.4s ease" }} />
+      <div style={{ position:"absolute", top:24, left:4, width:30, height:20, background: accent + "cc", borderRadius:"20% 20% 10% 10%", zIndex:2, animation: isPetting ? "girlSway 0.7s ease-in-out infinite" : "breathe 3s ease-in-out infinite" }} />
+      <div style={{ position:"absolute", top: isDancing ? 30 : 26, right: isDancing ? -5 : 0, width:6, height: isEating ? 18 : isCandle ? 18 : 16, background:skin, borderRadius:4, zIndex:1, transformOrigin: isDancing || isEating || isCandle ? "bottom center" : "top center", animation: isDancing ? "waveR 0.52s ease-in-out 0.26s infinite" : isEating ? "eatArm 1.1s ease-in-out infinite" : isCandle ? "girlReachSwing 0.9s ease-in-out infinite" : isWorking ? "typeR 0.38s ease-in-out 0.19s infinite" : "none", transition:"top 0.4s ease,right 0.4s ease" }} />
       {isEating && <div style={{ position:"absolute", top:26, right:0, width:2, height:14, background:"#9ca3af", borderRadius:1, transformOrigin:"bottom center", animation:"eatArm 1.1s ease-in-out infinite", zIndex:6 }} />}
       <div style={{ position:"absolute", top:42, left:4, width:30, height: isDancing ? 18 : 13, background:pants, borderRadius:"0 0 8px 8px", zIndex:2, transition:"height 0.4s ease" }} />
       {isDancing && <>
@@ -139,8 +150,8 @@ function Cat({ pose, accent }: { pose: string; accent: string }) {
     : { bottom: isDancing || isFeeding ? "18%" : "26%", left:"18%" };
   const anim = isDancing ? "catDance 0.8s ease-in-out infinite"
     : isFeeding ? "catEatBob 0.9s ease-in-out infinite"
-    : isPerch ? "perchBreathe 3.4s ease-in-out infinite"
-    : isPet ? "purrPaw 0.5s ease-in-out infinite"
+    : isPerch ? "perchBreathe 1.6s ease-in-out infinite"
+    : isPet ? "purrPaw 0.32s ease-in-out infinite"
     : "catwalk 8s ease-in-out 1s infinite";
   return (
     <div style={{ position:"absolute", width:32, height:28, zIndex:6, transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", animation: anim, ...posStyle }}>
@@ -160,7 +171,7 @@ function Cat({ pose, accent }: { pose: string; accent: string }) {
         <div style={{ position:"absolute", top:11, right:-9, width:11, height:1, background:dark + "77", borderRadius:1 }} />
       </div>
       <div style={{ position:"absolute", top:18, left:4, width:24, height:10, background:fur, borderRadius:"30% 30% 50% 50%" }} />
-      <div style={{ position:"absolute", top:14, right:-10, width:11, height:7, borderTop:"3px solid " + fur, borderRight:"3px solid " + fur, borderRadius:"0 50% 50% 0", transformOrigin:"left center", animation: isDancing ? "tailFast 0.3s ease-in-out infinite" : "tailWag 2s ease-in-out infinite" }} />
+      <div style={{ position:"absolute", top:14, right:-10, width:11, height:7, borderTop:"3px solid " + fur, borderRight:"3px solid " + fur, borderRadius:"0 50% 50% 0", transformOrigin:"left center", animation: isDancing || isPet || isPerch ? "tailFast 0.3s ease-in-out infinite" : "tailWag 2s ease-in-out infinite" }} />
       <div style={{ position:"absolute", bottom:0, left:4, width:8, height:5, background:fur, borderRadius:"50% 50% 40% 40%" }} />
       <div style={{ position:"absolute", bottom:0, right:4, width:8, height:5, background:fur, borderRadius:"50% 50% 40% 40%" }} />
     </div>
@@ -340,6 +351,15 @@ function Room({ mood, pose, accent, candleLit }: { mood: string; pose: string; a
       {isDancing && ["♪","♫","♩"].map((n, i) => (
         <div key={i} style={{ position:"absolute", top:"45%", left:(22 + i * 12) + "%", fontSize:13, color:accent, opacity:0, animation:"floatnote 2s ease-out " + (i * 0.75) + "s infinite" }}>{n}</div>
       ))}
+      {pose === "pet" && ["💜","💕","💖","✨","💜"].map((h, i) => (
+        <div key={"h"+i} style={{ position:"absolute", bottom:"32%", left:(28 + i * 4) + "%", fontSize:12, opacity:0, ["--dx" as any]: ((i % 2 ? 1 : -1) * (6 + i * 3)) + "px", animation:"heartFloat 1.6s ease-out " + (i * 0.32) + "s infinite" }}>{h}</div>
+      ))}
+      {pose === "candle" && Array.from({ length: 6 }, (_, i) => (
+        <div key={"sp"+i} style={{ position:"absolute", bottom:"30%", right:(14 + (i % 3) * 3) + "%", width:3, height:3, borderRadius:"50%", background:"#fde68a", boxShadow:"0 0 6px #fbbf24", opacity:0, animation:"candleSparkle 1.4s ease-out " + (i * 0.22) + "s infinite" }} />
+      ))}
+      {candleLit && (
+        <div style={{ position:"absolute", bottom:"calc(24% + 26px)", right:"15%", width:18, height:18, borderRadius:"50%", animation:"candleGlow 2.4s ease-in-out infinite", pointerEvents:"none" }} />
+      )}
     </>
   );
 }
@@ -393,6 +413,24 @@ function App() {
   const [msgIdx, setMsgIdx] = useState(0);
   const [muted, setMuted] = useState(false);
   const [candleLit, setCandleLit] = useState(true);
+  const [todoOpen, setTodoOpen] = useState(false);
+  const [todoInput, setTodoInput] = useState("");
+  const [todos, setTodos] = useState<{ id: number; text: string; done: boolean }[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem("bd-todos") || "[]"); } catch { return []; }
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") localStorage.setItem("bd-todos", JSON.stringify(todos));
+  }, [todos]);
+  const addTodo = () => {
+    const t = todoInput.trim();
+    if (!t) return;
+    setTodos((p) => [{ id: Date.now(), text: t, done: false }, ...p]);
+    setTodoInput("");
+  };
+  const toggleTodo = (id: number) => setTodos((p) => p.map((t) => t.id === id ? { ...t, done: !t.done } : t));
+  const removeTodo = (id: number) => setTodos((p) => p.filter((t) => t.id !== id));
+  const remaining = todos.filter((t) => !t.done).length;
   const candleAudioRef = useRef<{ ctx: AudioContext; gain: GainNode; stop: () => void } | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const poseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -530,8 +568,13 @@ function App() {
   return (
     <>
       <style>{CSS}</style>
-      <main className="bd-app" style={{ width:"100%", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"12px 14px 28px", background: md.bg, animation:"fadein 0.5s ease", fontFamily:"system-ui, sans-serif", transition:"background 0.5s ease" }}>
-        <div style={{ width:"100%", maxWidth:380 }}>
+      <main className="bd-app" style={{ width:"100%", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"12px 14px 28px", background: md.bg, animation:"fadein 0.5s ease", fontFamily:"system-ui, sans-serif", transition:"background 0.5s ease", position:"relative", overflow:"hidden" }}>
+        <div className="wm" aria-hidden="true" />
+        <button onClick={() => setTodoOpen(true)} aria-label="Open to-do list"
+          style={{ position:"fixed", top:14, right:14, zIndex:40, padding:"8px 12px", borderRadius:14, border:"1px solid " + accent + "55", background:"rgba(0,0,0,0.55)", backdropFilter:"blur(10px)", color:accent, fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6, boxShadow:"0 4px 14px rgba(0,0,0,0.4)" }}>
+          ✅ To-do {remaining > 0 && <span style={{ background:accent, color:"#000", borderRadius:10, padding:"1px 7px", fontSize:10 }}>{remaining}</span>}
+        </button>
+        <div style={{ width:"100%", maxWidth:380, position:"relative", zIndex:1 }}>
           <header style={{ textAlign:"center", marginBottom:10 }}>
             <div style={{ fontSize:10, letterSpacing:3, textTransform:"uppercase", color:accent, opacity:0.6, marginBottom:3 }}>body doubling mode</div>
             <h1 style={{ fontSize:19, fontWeight:800, color:"#f1f5f9", letterSpacing:-0.5, margin:0 }}>We're working together 💜</h1>
@@ -622,7 +665,7 @@ function App() {
           </div>
 
           <footer style={{ marginTop:18, display:"flex", flexDirection:"column", alignItems:"center", gap:10, paddingBottom:6 }}>
-            <img src="/cf-logo.png" alt="CreativeFactory.studio" style={{ width:120, height:"auto", opacity:0.92, filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }} />
+            <img src="/cf-logo.png" alt="CreativeFactory.studio" style={{ width:120, height:"auto", filter:"drop-shadow(0 0 10px " + accent + "66)", mixBlendMode:"screen" }} />
             <a href="https://ko-fi.com/creativefactorystudio" target="_blank" rel="noopener noreferrer"
               style={{ display:"inline-flex", alignItems:"center", gap:8, padding:"9px 16px", borderRadius:20, background:"#13C3FF", color:"#fff", fontWeight:700, fontSize:13, textDecoration:"none", boxShadow:"0 4px 14px rgba(19,195,255,0.4)", transition:"transform 0.18s ease" }}>
               <span style={{ fontSize:15 }}>☕</span> Support on Ko-fi
@@ -632,6 +675,50 @@ function App() {
             </div>
           </footer>
         </div>
+        {todoOpen && (
+          <div onClick={() => setTodoOpen(false)}
+            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.72)", backdropFilter:"blur(6px)", zIndex:60, display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"60px 16px 16px", animation:"fadein 0.25s ease" }}>
+            <div onClick={(e) => e.stopPropagation()}
+              style={{ width:"100%", maxWidth:380, background:"linear-gradient(180deg,#181028,#0e0a18)", border:"1px solid " + accent + "44", borderRadius:18, padding:18, boxShadow:"0 20px 50px rgba(0,0,0,0.6), 0 0 30px " + accent + "33", color:"#f1f5f9" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+                <div>
+                  <div style={{ fontSize:9, letterSpacing:3, textTransform:"uppercase", color:accent, opacity:0.7 }}>focus list</div>
+                  <h2 style={{ margin:"2px 0 0", fontSize:18, fontWeight:800 }}>My To-dos</h2>
+                </div>
+                <button onClick={() => setTodoOpen(false)} aria-label="Close"
+                  style={{ width:30, height:30, borderRadius:8, border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:16, cursor:"pointer" }}>✕</button>
+              </div>
+              <form onSubmit={(e) => { e.preventDefault(); addTodo(); }} style={{ display:"flex", gap:6, marginBottom:12 }}>
+                <input value={todoInput} onChange={(e) => setTodoInput(e.target.value)} placeholder="Add a task…" autoFocus
+                  style={{ flex:1, padding:"10px 12px", borderRadius:10, border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.05)", color:"#f1f5f9", fontSize:13, outline:"none" }} />
+                <button type="submit"
+                  style={{ padding:"0 14px", borderRadius:10, border:"none", background:accent, color:"#0a0a0a", fontWeight:800, fontSize:13, cursor:"pointer" }}>Add</button>
+              </form>
+              <div style={{ maxHeight:340, overflowY:"auto", display:"flex", flexDirection:"column", gap:6 }}>
+                {todos.length === 0 ? (
+                  <div style={{ textAlign:"center", padding:"24px 8px", color:"rgba(255,255,255,0.35)", fontSize:12 }}>No tasks yet — add one above ✨</div>
+                ) : todos.map((t) => (
+                  <div key={t.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 10px", borderRadius:10, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.06)" }}>
+                    <button onClick={() => toggleTodo(t.id)} aria-label="Toggle"
+                      style={{ width:20, height:20, borderRadius:6, border:"2px solid " + (t.done ? accent : "rgba(255,255,255,0.25)"), background: t.done ? accent : "transparent", color:"#0a0a0a", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:900, flexShrink:0 }}>
+                      {t.done ? "✓" : ""}
+                    </button>
+                    <div style={{ flex:1, fontSize:13, color: t.done ? "rgba(255,255,255,0.35)" : "#f1f5f9", textDecoration: t.done ? "line-through" : "none", wordBreak:"break-word" }}>{t.text}</div>
+                    <button onClick={() => removeTodo(t.id)} aria-label="Remove"
+                      style={{ width:24, height:24, borderRadius:6, border:"none", background:"transparent", color:"rgba(255,255,255,0.3)", fontSize:14, cursor:"pointer" }}>×</button>
+                  </div>
+                ))}
+              </div>
+              {todos.length > 0 && (
+                <div style={{ display:"flex", justifyContent:"space-between", marginTop:12, fontSize:11, color:"rgba(255,255,255,0.4)" }}>
+                  <span>{remaining} left · {todos.length - remaining} done</span>
+                  <button onClick={() => setTodos((p) => p.filter((t) => !t.done))}
+                    style={{ background:"none", border:"none", color:accent, fontSize:11, cursor:"pointer", fontWeight:600 }}>Clear completed</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </main>
     </>
   );
