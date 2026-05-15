@@ -150,8 +150,8 @@ function Cat({ pose, accent }: { pose: string; accent: string }) {
     : { bottom: isDancing || isFeeding ? "18%" : "26%", left:"18%" };
   const anim = isDancing ? "catDance 0.8s ease-in-out infinite"
     : isFeeding ? "catEatBob 0.9s ease-in-out infinite"
-    : isPerch ? "perchBreathe 3.4s ease-in-out infinite"
-    : isPet ? "purrPaw 0.5s ease-in-out infinite"
+    : isPerch ? "perchBreathe 1.6s ease-in-out infinite"
+    : isPet ? "purrPaw 0.32s ease-in-out infinite"
     : "catwalk 8s ease-in-out 1s infinite";
   return (
     <div style={{ position:"absolute", width:32, height:28, zIndex:6, transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", animation: anim, ...posStyle }}>
