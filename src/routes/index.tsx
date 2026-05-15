@@ -71,11 +71,21 @@ const CSS = `
 @keyframes flame      { 0%{transform:translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg);opacity:1} 25%{transform:translateX(-50%) scaleY(1.18) scaleX(0.82) rotate(3deg);opacity:0.95} 50%{transform:translateX(-50%) scaleY(0.92) scaleX(1.1) rotate(-3deg);opacity:1} 75%{transform:translateX(-50%) scaleY(1.22) scaleX(0.78) rotate(2deg);opacity:0.88} 100%{transform:translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg);opacity:1} }
 @keyframes hangSway   { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
 @keyframes flowerNod  { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
-@keyframes petArm     { 0%,100%{transform:rotate(70deg) translateY(4px)} 50%{transform:rotate(85deg) translateY(8px)} }
-@keyframes purrPaw    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1.5px)} }
-@keyframes perchBreathe { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.92)} }
+@keyframes petArm     { 0%,100%{transform:rotate(60deg) translateY(2px)} 25%{transform:rotate(95deg) translateY(10px)} 75%{transform:rotate(78deg) translateY(6px)} }
+@keyframes purrPaw    { 0%,100%{transform:translateY(0) rotate(0)} 25%{transform:translateY(-3px) rotate(-2deg)} 75%{transform:translateY(-1px) rotate(2deg)} }
+@keyframes perchBreathe { 0%,100%{transform:scaleY(1) translateY(0)} 30%{transform:scaleY(0.92) translateY(2px)} 60%{transform:scaleY(1.05) translateY(-2px)} }
+@keyframes perchEar     { 0%,100%{transform:rotate(0)} 40%{transform:rotate(-12deg)} 80%{transform:rotate(8deg)} }
 @keyframes dripDali   { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(2px) scaleY(1.1)} }
+@keyframes heartFloat { 0%{opacity:0;transform:translate(0,0) scale(0.6)} 18%{opacity:1} 100%{opacity:0;transform:translate(var(--dx,8px),-38px) scale(1.1)} }
+@keyframes candleSparkle { 0%{opacity:0;transform:translateY(0) scale(0.4)} 30%{opacity:1} 100%{opacity:0;transform:translateY(-22px) scale(1.1)} }
+@keyframes candleGlow { 0%,100%{box-shadow:0 0 14px rgba(251,191,36,0.45)} 50%{box-shadow:0 0 26px rgba(251,191,36,0.85)} }
+@keyframes girlReachSwing { 0%,100%{transform:rotate(40deg) translateY(2px)} 50%{transform:rotate(70deg) translateY(10px)} }
+@keyframes wmDrift   { 0%{background-position:0 0} 100%{background-position:240px -240px} }
 .bd-app button { font-family:inherit; }
+.bd-app .wm { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.055; mix-blend-mode:overlay;
+  background-image: repeating-linear-gradient(135deg, transparent 0 220px, rgba(255,255,255,0.4) 220px 240px),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='80' viewBox='0 0 320 80'><text x='0' y='52' font-family='Georgia,serif' font-style='italic' font-weight='700' font-size='34' fill='white' letter-spacing='2'>bodydoubleCFS bodydoubleCFS</text></svg>");
+  background-size: auto, 320px 80px; background-repeat: repeat; transform: rotate(-14deg) scale(1.4); transform-origin:center; animation: wmDrift 60s linear infinite; }
 `;
 
 function Girl({ pose, accent }: { pose: string; accent: string }) {
