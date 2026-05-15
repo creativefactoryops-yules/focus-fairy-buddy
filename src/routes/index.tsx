@@ -171,7 +171,7 @@ function Cat({ pose, accent }: { pose: string; accent: string }) {
         <div style={{ position:"absolute", top:11, right:-9, width:11, height:1, background:dark + "77", borderRadius:1 }} />
       </div>
       <div style={{ position:"absolute", top:18, left:4, width:24, height:10, background:fur, borderRadius:"30% 30% 50% 50%" }} />
-      <div style={{ position:"absolute", top:14, right:-10, width:11, height:7, borderTop:"3px solid " + fur, borderRight:"3px solid " + fur, borderRadius:"0 50% 50% 0", transformOrigin:"left center", animation: isDancing ? "tailFast 0.3s ease-in-out infinite" : "tailWag 2s ease-in-out infinite" }} />
+      <div style={{ position:"absolute", top:14, right:-10, width:11, height:7, borderTop:"3px solid " + fur, borderRight:"3px solid " + fur, borderRadius:"0 50% 50% 0", transformOrigin:"left center", animation: isDancing || isPet || isPerch ? "tailFast 0.3s ease-in-out infinite" : "tailWag 2s ease-in-out infinite" }} />
       <div style={{ position:"absolute", bottom:0, left:4, width:8, height:5, background:fur, borderRadius:"50% 50% 40% 40%" }} />
       <div style={{ position:"absolute", bottom:0, right:4, width:8, height:5, background:fur, borderRadius:"50% 50% 40% 40%" }} />
     </div>
