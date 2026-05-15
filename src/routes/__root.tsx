@@ -82,8 +82,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "BODY DOUBLE app by creativefactorystudio" },
       { name: "twitter:description", content: "A cute pixel girl and her pet mochi the cat - a body double, task organization  helping the NOTypical  brain execute tasks and finish projects." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8c6fe59b-b306-4574-99a3-864e92ad6188" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8c6fe59b-b306-4574-99a3-864e92ad6188" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/ee2982ce-0bd4-4a9e-9c0a-11d045288593" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/ee2982ce-0bd4-4a9e-9c0a-11d045288593" },
     ],
     links: [
       {
