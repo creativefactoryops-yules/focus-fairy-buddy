@@ -413,6 +413,24 @@ function App() {
   const [msgIdx, setMsgIdx] = useState(0);
   const [muted, setMuted] = useState(false);
   const [candleLit, setCandleLit] = useState(true);
+  const [todoOpen, setTodoOpen] = useState(false);
+  const [todoInput, setTodoInput] = useState("");
+  const [todos, setTodos] = useState<{ id: number; text: string; done: boolean }[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem("bd-todos") || "[]"); } catch { return []; }
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") localStorage.setItem("bd-todos", JSON.stringify(todos));
+  }, [todos]);
+  const addTodo = () => {
+    const t = todoInput.trim();
+    if (!t) return;
+    setTodos((p) => [{ id: Date.now(), text: t, done: false }, ...p]);
+    setTodoInput("");
+  };
+  const toggleTodo = (id: number) => setTodos((p) => p.map((t) => t.id === id ? { ...t, done: !t.done } : t));
+  const removeTodo = (id: number) => setTodos((p) => p.filter((t) => t.id !== id));
+  const remaining = todos.filter((t) => !t.done).length;
   const candleAudioRef = useRef<{ ctx: AudioContext; gain: GainNode; stop: () => void } | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const poseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
