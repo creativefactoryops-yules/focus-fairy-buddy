@@ -568,8 +568,13 @@ function App() {
   return (
     <>
       <style>{CSS}</style>
-      <main className="bd-app" style={{ width:"100%", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"12px 14px 28px", background: md.bg, animation:"fadein 0.5s ease", fontFamily:"system-ui, sans-serif", transition:"background 0.5s ease" }}>
-        <div style={{ width:"100%", maxWidth:380 }}>
+      <main className="bd-app" style={{ width:"100%", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"12px 14px 28px", background: md.bg, animation:"fadein 0.5s ease", fontFamily:"system-ui, sans-serif", transition:"background 0.5s ease", position:"relative", overflow:"hidden" }}>
+        <div className="wm" aria-hidden="true" />
+        <button onClick={() => setTodoOpen(true)} aria-label="Open to-do list"
+          style={{ position:"fixed", top:14, right:14, zIndex:40, padding:"8px 12px", borderRadius:14, border:"1px solid " + accent + "55", background:"rgba(0,0,0,0.55)", backdropFilter:"blur(10px)", color:accent, fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6, boxShadow:"0 4px 14px rgba(0,0,0,0.4)" }}>
+          ✅ To-do {remaining > 0 && <span style={{ background:accent, color:"#000", borderRadius:10, padding:"1px 7px", fontSize:10 }}>{remaining}</span>}
+        </button>
+        <div style={{ width:"100%", maxWidth:380, position:"relative", zIndex:1 }}>
           <header style={{ textAlign:"center", marginBottom:10 }}>
             <div style={{ fontSize:10, letterSpacing:3, textTransform:"uppercase", color:accent, opacity:0.6, marginBottom:3 }}>body doubling mode</div>
             <h1 style={{ fontSize:19, fontWeight:800, color:"#f1f5f9", letterSpacing:-0.5, margin:0 }}>We're working together 💜</h1>
