@@ -675,6 +675,50 @@ function App() {
             </div>
           </footer>
         </div>
+        {todoOpen && (
+          <div onClick={() => setTodoOpen(false)}
+            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.72)", backdropFilter:"blur(6px)", zIndex:60, display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"60px 16px 16px", animation:"fadein 0.25s ease" }}>
+            <div onClick={(e) => e.stopPropagation()}
+              style={{ width:"100%", maxWidth:380, background:"linear-gradient(180deg,#181028,#0e0a18)", border:"1px solid " + accent + "44", borderRadius:18, padding:18, boxShadow:"0 20px 50px rgba(0,0,0,0.6), 0 0 30px " + accent + "33", color:"#f1f5f9" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+                <div>
+                  <div style={{ fontSize:9, letterSpacing:3, textTransform:"uppercase", color:accent, opacity:0.7 }}>focus list</div>
+                  <h2 style={{ margin:"2px 0 0", fontSize:18, fontWeight:800 }}>My To-dos</h2>
+                </div>
+                <button onClick={() => setTodoOpen(false)} aria-label="Close"
+                  style={{ width:30, height:30, borderRadius:8, border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:16, cursor:"pointer" }}>✕</button>
+              </div>
+              <form onSubmit={(e) => { e.preventDefault(); addTodo(); }} style={{ display:"flex", gap:6, marginBottom:12 }}>
+                <input value={todoInput} onChange={(e) => setTodoInput(e.target.value)} placeholder="Add a task…" autoFocus
+                  style={{ flex:1, padding:"10px 12px", borderRadius:10, border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.05)", color:"#f1f5f9", fontSize:13, outline:"none" }} />
+                <button type="submit"
+                  style={{ padding:"0 14px", borderRadius:10, border:"none", background:accent, color:"#0a0a0a", fontWeight:800, fontSize:13, cursor:"pointer" }}>Add</button>
+              </form>
+              <div style={{ maxHeight:340, overflowY:"auto", display:"flex", flexDirection:"column", gap:6 }}>
+                {todos.length === 0 ? (
+                  <div style={{ textAlign:"center", padding:"24px 8px", color:"rgba(255,255,255,0.35)", fontSize:12 }}>No tasks yet — add one above ✨</div>
+                ) : todos.map((t) => (
+                  <div key={t.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 10px", borderRadius:10, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.06)" }}>
+                    <button onClick={() => toggleTodo(t.id)} aria-label="Toggle"
+                      style={{ width:20, height:20, borderRadius:6, border:"2px solid " + (t.done ? accent : "rgba(255,255,255,0.25)"), background: t.done ? accent : "transparent", color:"#0a0a0a", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:900, flexShrink:0 }}>
+                      {t.done ? "✓" : ""}
+                    </button>
+                    <div style={{ flex:1, fontSize:13, color: t.done ? "rgba(255,255,255,0.35)" : "#f1f5f9", textDecoration: t.done ? "line-through" : "none", wordBreak:"break-word" }}>{t.text}</div>
+                    <button onClick={() => removeTodo(t.id)} aria-label="Remove"
+                      style={{ width:24, height:24, borderRadius:6, border:"none", background:"transparent", color:"rgba(255,255,255,0.3)", fontSize:14, cursor:"pointer" }}>×</button>
+                  </div>
+                ))}
+              </div>
+              {todos.length > 0 && (
+                <div style={{ display:"flex", justifyContent:"space-between", marginTop:12, fontSize:11, color:"rgba(255,255,255,0.4)" }}>
+                  <span>{remaining} left · {todos.length - remaining} done</span>
+                  <button onClick={() => setTodos((p) => p.filter((t) => !t.done))}
+                    style={{ background:"none", border:"none", color:accent, fontSize:11, cursor:"pointer", fontWeight:600 }}>Clear completed</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </main>
     </>
   );
