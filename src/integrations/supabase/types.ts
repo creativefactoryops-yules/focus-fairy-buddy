@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          cat_breed: string
+          cat_fur_color: string
+          created_at: string
+          display_name: string | null
+          hair_color: string
+          id: string
+          outfit_color: string | null
+          skin_color: string
+          updated_at: string
+        }
+        Insert: {
+          cat_breed?: string
+          cat_fur_color?: string
+          created_at?: string
+          display_name?: string | null
+          hair_color?: string
+          id: string
+          outfit_color?: string | null
+          skin_color?: string
+          updated_at?: string
+        }
+        Update: {
+          cat_breed?: string
+          cat_fur_color?: string
+          created_at?: string
+          display_name?: string | null
+          hair_color?: string
+          id?: string
+          outfit_color?: string | null
+          skin_color?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
