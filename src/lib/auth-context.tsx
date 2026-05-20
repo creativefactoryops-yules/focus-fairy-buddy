@@ -6,6 +6,7 @@ export type Profile = {
   id: string;
   display_name: string | null;
   hair_color: string;
+  hair_length: string; // 'short' | 'medium' | 'long'
   skin_color: string;
   outfit_color: string | null;
   cat_fur_color: string;
