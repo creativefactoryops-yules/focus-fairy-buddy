@@ -23,7 +23,7 @@ const MOODS = [
   { id: "cozy",    label: "Cozy",    bg: "#180f08", sky: "#100800", accent: "#fb923c", desc: "Hip-hop · warm 🕯️",
     music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/George%20Street%20Shuffle.mp3" },
   { id: "sunrise", label: "Sunrise", bg: "#1a0f12", sky: "#2a1410", accent: "#fda4af", desc: "Morning warmth 🌅",
-    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Morning%20Mood.mp3" },
+    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Wallpaper.mp3" },
   { id: "rainbow", label: "Rainbow", bg: "#150818", sky: "#1a0a22", accent: "#c084fc", desc: "Magic time 🦄🌈",
     music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3" },
 ];
