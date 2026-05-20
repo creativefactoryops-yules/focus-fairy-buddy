@@ -23,7 +23,7 @@ const MOODS = [
   { id: "cozy",    label: "Cozy",    bg: "#180f08", sky: "#100800", accent: "#fb923c", desc: "Hip-hop · warm 🕯️",
     music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/George%20Street%20Shuffle.mp3" },
   { id: "sunrise", label: "Sunrise", bg: "#1a0f12", sky: "#2a1410", accent: "#fda4af", desc: "Morning warmth 🌅",
-    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sunday%20Plans.mp3" },
+    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Wallpaper.mp3" },
   { id: "rainbow", label: "Rainbow", bg: "#150818", sky: "#1a0a22", accent: "#c084fc", desc: "Magic time 🦄🌈",
     music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3" },
 ];
@@ -107,21 +107,30 @@ const CSS = `
 @media (min-width: 1280px) { .bd-shell { max-width: 1280px !important; } }
 `;
 
-type CharColors = { hair: string; skin: string; outfit?: string | null; fur: string };
+type CharColors = { hair: string; skin: string; outfit?: string | null; fur: string; hairLength?: string };
 
 function Girl({ pose, accent, colors }: { pose: string; accent: string; colors: CharColors }) {
   const { hair, skin } = colors;
   const pants = "#374151";
   const outfit = colors.outfit || accent;
+  const hairLen = colors.hairLength || "long";
   const isDancing = pose === "dance", isEating = pose === "eat";
   const isFeeding = pose === "feed",  isWorking = pose === "work";
   const isPetting = pose === "pet",   isCandle = pose === "candle";
   const isPhone = pose === "phone";
-  const btm = isDancing ? "22%" : "15%";
-  const lean = isPetting ? "rotate(-14deg) translateX(-78%)" : "translateX(-82%)";
-  // bigger / taller pixel girl (was 38 wide)
+  // Move her body to the activity instead of teleporting just an arm
+  let leftPct = "50%";
+  let translate = "translateX(-50%)";
+  let btm = "15%";
+  if (isDancing) btm = "22%";
+  if (isPetting) { leftPct = "36%"; translate = "translateX(-50%) rotate(-6deg)"; btm = "14%"; }
+  if (isPhone)   { leftPct = "66%"; translate = "translateX(-50%)"; }
+  if (isFeeding) { leftPct = "40%"; translate = "translateX(-50%)"; }
+  // Ponytail length per profile choice
+  const ponyH = hairLen === "short" ? 8 : hairLen === "medium" ? 16 : 24;
+  const ponyTop = hairLen === "short" ? 4 : 5;
   return (
-    <div style={{ position:"absolute", bottom:btm, left:"50%", transform:lean, transformOrigin:"bottom center", width:50, zIndex:5, transition:"bottom 0.55s cubic-bezier(0.34,1.56,0.64,1), transform 0.4s ease", animation: isDancing ? "girlSway 0.55s ease-in-out infinite" : "none" }}>
+    <div style={{ position:"absolute", bottom:btm, left:leftPct, transform: translate + " scale(1.55)", transformOrigin:"bottom center", width:50, zIndex:5, transition:"bottom 0.55s cubic-bezier(0.34,1.56,0.64,1), left 0.55s ease, transform 0.55s ease", animation: isDancing ? "girlSway 0.55s ease-in-out infinite" : "none" }}>
       <div style={{ position:"absolute", top:0, left:3, width:44, height:26, background:hair, borderRadius:"50% 50% 0 0", zIndex:0 }} />
       <div style={{ position:"absolute", top:3, left:7, width:36, height:31, background:skin, borderRadius:"45% 45% 40% 40%", zIndex:2, animation: isDancing ? "headDance 0.55s ease-in-out infinite" : isWorking ? "headbob 2s ease-in-out infinite" : "breathe 3.5s ease-in-out infinite" }}>
         <div style={{ position:"absolute", top:12, left:7, width:6, height:6, background:"#1e1b4b", borderRadius:"50%", animation:"gblink 4.5s ease-in-out infinite" }} />
@@ -134,22 +143,22 @@ function Girl({ pose, accent, colors }: { pose: string; accent: string; colors: 
       </div>
       <div style={{ position:"absolute", top:3, left:4, width:18, height:13, background:hair, borderRadius:"50% 30% 40% 50%", zIndex:3 }} />
       <div style={{ position:"absolute", top:1, left:21, width:12, height:9, background:hair, borderRadius:"30% 50% 50% 30%", zIndex:3 }} />
-      <div style={{ position:"absolute", top:5, right:0, width:10, height:21, background:hair, borderRadius:"40% 60% 60% 40%", zIndex:1, transformOrigin:"top center", animation: isDancing ? "ponyDance 0.4s ease-in-out infinite" : "ponyIdle 3s ease-in-out infinite" }} />
+      {/* ponytail — length driven by profile */}
+      <div style={{ position:"absolute", top:ponyTop, right:0, width:10, height:ponyH, background:hair, borderRadius:"40% 60% 60% 40%", zIndex:1, transformOrigin:"top center", animation: isDancing ? "ponyDance 0.4s ease-in-out infinite" : "ponyIdle 3s ease-in-out infinite" }} />
       {/* Left arm */}
       <div style={{ position:"absolute", top: isDancing ? 38 : 33, left: isDancing ? -6 : 1, width:7, height: isPetting ? 22 : 20, background:skin, borderRadius:5, zIndex:1, transformOrigin: "top center", animation: isDancing ? "waveL 0.52s ease-in-out infinite" : isFeeding ? "reachL 1.4s ease-in-out infinite" : isPetting ? "petArm 0.65s ease-in-out infinite" : isWorking ? "typeL 0.38s ease-in-out infinite" : "none", transition:"top 0.4s ease,left 0.4s ease" }} />
-      {/* Torso / outfit (NEW outfit: cropped sweater + skirt look via gradient) */}
+      {/* Torso / outfit */}
       <div style={{ position:"absolute", top:31, left:5, width:40, height:25, background: "linear-gradient(180deg," + outfit + "ee 0%," + outfit + "cc 60%," + outfit + "dd 100%)", borderRadius:"22% 22% 12% 12%", zIndex:2, animation: isPetting ? "girlSway 0.7s ease-in-out infinite" : "breathe 3s ease-in-out infinite", boxShadow:"inset 0 2px 0 rgba(255,255,255,0.18)" }}>
-        {/* outfit detail: collar */}
         <div style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:14, height:3, background:"rgba(255,255,255,0.35)", borderRadius:"0 0 6px 6px" }} />
-        {/* belt line */}
         <div style={{ position:"absolute", bottom:8, left:0, right:0, height:2, background:"rgba(0,0,0,0.18)" }} />
       </div>
       {/* Right arm */}
-      <div style={{ position:"absolute", top: isDancing ? 38 : 33, right: isDancing ? -6 : 1, width:7, height: isEating ? 22 : isCandle || isPhone ? 22 : 20, background:skin, borderRadius:5, zIndex:isPhone ? 7 : 1, transformOrigin: isDancing || isEating || isCandle || isPhone ? "bottom center" : "top center", animation: isDancing ? "waveR 0.52s ease-in-out 0.26s infinite" : isEating ? "eatArm 1.1s ease-in-out infinite" : isCandle ? "girlReachSwing 0.9s ease-in-out infinite" : isPhone ? "phoneArm 1.6s ease-in-out infinite" : isWorking ? "typeR 0.38s ease-in-out 0.19s infinite" : "none", transition:"top 0.4s ease,right 0.4s ease" }} />
-      {/* Phone in hand when on call */}
+      <div style={{ position:"absolute", top: isDancing ? 38 : isPhone ? 22 : 33, right: isDancing ? -6 : isPhone ? -2 : 1, width:7, height: isEating ? 22 : isCandle || isPhone ? 22 : 20, background:skin, borderRadius:5, zIndex:isPhone ? 7 : 1, transformOrigin: isDancing || isEating || isCandle || isPhone ? "bottom center" : "top center", animation: isDancing ? "waveR 0.52s ease-in-out 0.26s infinite" : isEating ? "eatArm 1.1s ease-in-out infinite" : isCandle ? "girlReachSwing 0.9s ease-in-out infinite" : isPhone ? "phoneArm 1.6s ease-in-out infinite" : isWorking ? "typeR 0.38s ease-in-out 0.19s infinite" : "none", transition:"top 0.4s ease,right 0.4s ease" }} />
+      {/* Phone handset held up to ear when calling */}
       {isPhone && (
-        <div style={{ position:"absolute", top:30, right:-4, width:10, height:14, background:"#fb7185", borderRadius:"30% 30% 50% 50%", zIndex:8, boxShadow:"0 1px 3px rgba(0,0,0,0.4)", border:"1px solid #be123c", animation:"phoneRing 0.6s ease-in-out infinite" }}>
-          <div style={{ position:"absolute", top:2, left:2, right:2, height:3, background:"rgba(0,0,0,0.3)", borderRadius:1 }} />
+        <div style={{ position:"absolute", top:8, right:-6, width:12, height:18, background:"#fb7185", borderRadius:"40% 40% 60% 60%", zIndex:8, boxShadow:"0 1px 3px rgba(0,0,0,0.4)", border:"1px solid #be123c", animation:"phoneRing 0.35s ease-in-out infinite" }}>
+          <div style={{ position:"absolute", top:2, left:3, right:3, height:3, background:"rgba(0,0,0,0.35)", borderRadius:1 }} />
+          <div style={{ position:"absolute", bottom:2, left:3, right:3, height:3, background:"rgba(0,0,0,0.35)", borderRadius:1 }} />
         </div>
       )}
       {isEating && <div style={{ position:"absolute", top:33, right:0, width:2, height:18, background:"#9ca3af", borderRadius:1, transformOrigin:"bottom center", animation:"eatArm 1.1s ease-in-out infinite", zIndex:6 }} />}
@@ -435,6 +444,7 @@ function TimerRing({ elapsed, duration, accent }: { elapsed: number; duration: n
 
 const HAIR_OPTIONS = ["#2d1b69","#7c2d12","#0f172a","#facc15","#dc2626","#a78bfa"];
 const SKIN_OPTIONS = ["#f5c5a3","#e0a878","#c08763","#8b5a3c","#fde2d3","#5c3a24"];
+const OUTFIT_OPTIONS = ["#a78bfa","#f472b6","#34d399","#60a5fa","#fbbf24","#fb7185","#f5f5f4","#1f2937"];
 const CAT_FUR_OPTIONS = [
   { fur:"#d4a0d4", label:"Lilac"   },
   { fur:"#f5e6c8", label:"Cream"   },
@@ -443,26 +453,39 @@ const CAT_FUR_OPTIONS = [
   { fur:"#9ca3af", label:"Silver"  },
   { fur:"#1f1f1f", label:"Onyx"    },
 ];
+const HAIR_LENGTHS = ["short", "medium", "long"];
 
 function CharacterEditor({ onClose }: { onClose: () => void }) {
   const { profile, updateProfile } = useAuth();
   const [hair, setHair] = useState(profile?.hair_color || HAIR_OPTIONS[0]);
+  const [hairLength, setHairLength] = useState((profile as any)?.hair_length || "long");
   const [skin, setSkin] = useState(profile?.skin_color || SKIN_OPTIONS[0]);
+  const [outfit, setOutfit] = useState(profile?.outfit_color || OUTFIT_OPTIONS[0]);
   const [fur, setFur]   = useState(profile?.cat_fur_color || CAT_FUR_OPTIONS[0].fur);
   const [busy, setBusy] = useState(false);
   const save = async () => {
     setBusy(true);
-    await updateProfile({ hair_color: hair, skin_color: skin, cat_fur_color: fur });
+    await updateProfile({ hair_color: hair, hair_length: hairLength, skin_color: skin, outfit_color: outfit, cat_fur_color: fur } as any);
     setBusy(false); onClose();
   };
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", zIndex:70, display:"flex", alignItems:"center", justifyContent:"center", padding:16, backdropFilter:"blur(6px)" }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background:"linear-gradient(180deg,#1a1228,#0e0a18)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:18, padding:20, width:"100%", maxWidth:380, color:"#f1f5f9" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background:"linear-gradient(180deg,#1a1228,#0e0a18)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:18, padding:20, width:"100%", maxWidth:380, color:"#f1f5f9", maxHeight:"90vh", overflowY:"auto" }}>
         <h2 style={{ margin:"0 0 4px", fontSize:18, fontWeight:800 }}>Customize your friend</h2>
-        <p style={{ margin:"0 0 14px", fontSize:12, color:"rgba(255,255,255,0.5)" }}>Pick your pixel-girl look and Mochi's coat.</p>
-        <Swatches label="Hair"  values={HAIR_OPTIONS} selected={hair} onPick={setHair} />
+        <p style={{ margin:"0 0 14px", fontSize:12, color:"rgba(255,255,255,0.5)" }}>Pick your pixel-girl look, outfit, and Mochi's coat.</p>
+        <Swatches label="Hair color"  values={HAIR_OPTIONS} selected={hair} onPick={setHair} />
+        <div style={{ marginBottom:12 }}>
+          <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginBottom:6, letterSpacing:1, textTransform:"uppercase" }}>Hair length</div>
+          <div style={{ display:"flex", gap:6 }}>
+            {HAIR_LENGTHS.map((l) => (
+              <button key={l} onClick={() => setHairLength(l)}
+                style={{ flex:1, padding:"8px 0", borderRadius:8, border: hairLength === l ? "2px solid #fff" : "1px solid rgba(255,255,255,0.15)", background: hairLength === l ? "rgba(255,255,255,0.1)" : "transparent", color:"#f1f5f9", fontSize:12, fontWeight:600, cursor:"pointer", textTransform:"capitalize" }}>{l}</button>
+            ))}
+          </div>
+        </div>
         <Swatches label="Skin"  values={SKIN_OPTIONS} selected={skin} onPick={setSkin} />
-        <Swatches label="Mochi" values={CAT_FUR_OPTIONS.map((c) => c.fur)} selected={fur} onPick={setFur} />
+        <Swatches label="Outfit"  values={OUTFIT_OPTIONS} selected={outfit} onPick={setOutfit} />
+        <Swatches label="Mochi's coat" values={CAT_FUR_OPTIONS.map((c) => c.fur)} selected={fur} onPick={setFur} />
         <div style={{ display:"flex", gap:8, marginTop:12 }}>
           <button onClick={onClose} style={btnGhost}>Cancel</button>
           <button onClick={save} disabled={busy} style={{ ...btnSolid, flex:1 }}>{busy ? "Saving…" : "Save"}</button>
@@ -526,6 +549,7 @@ function App() {
   // Character colors from profile (or defaults)
   const colors: CharColors = {
     hair: profile?.hair_color || "#2d1b69",
+    hairLength: (profile as any)?.hair_length || "long",
     skin: profile?.skin_color || "#f5c5a3",
     outfit: profile?.outfit_color || accent,
     fur: profile?.cat_fur_color || "#d4a0d4",
@@ -538,17 +562,65 @@ function App() {
     poseRef.current = setTimeout(() => { setPose(runningRef.current ? "work" : "idle"); }, sec * 1000);
   };
 
+  // --- Web Audio: synthesized phone ring (no asset needed) ---
+  const ringCtxRef = useRef<{ ctx: AudioContext; stop: () => void } | null>(null);
+  const startRinging = () => {
+    try {
+      const Ctx: any = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!Ctx) return;
+      const ctx: AudioContext = new Ctx();
+      const stops: Array<() => void> = [];
+      const ringOnce = (startAt: number) => {
+        // classic North-American style ring: dual tone 440Hz + 480Hz for 2s, then 4s silence
+        const dur = 2;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, startAt);
+        gain.gain.linearRampToValueAtTime(0.18, startAt + 0.04);
+        gain.gain.setValueAtTime(0.18, startAt + dur - 0.05);
+        gain.gain.linearRampToValueAtTime(0, startAt + dur);
+        gain.connect(ctx.destination);
+        [440, 480].forEach((f) => {
+          const o = ctx.createOscillator();
+          o.type = "sine"; o.frequency.value = f;
+          o.connect(gain);
+          o.start(startAt); o.stop(startAt + dur);
+          stops.push(() => { try { o.stop(); } catch {} });
+        });
+      };
+      const t0 = ctx.currentTime + 0.05;
+      for (let i = 0; i < 3; i++) ringOnce(t0 + i * 6); // 3 rings over ~18s
+      ringCtxRef.current = { ctx, stop: () => { stops.forEach((s) => s()); ctx.close().catch(() => {}); } };
+    } catch {}
+  };
+  const stopRinging = () => { ringCtxRef.current?.stop(); ringCtxRef.current = null; };
+  useEffect(() => () => stopRinging(), []);
+
   useEffect(() => {
     if (running) {
       timerRef.current = setInterval(() => {
         setElapsed((e) => {
-          if (e + 1 >= total) {
+          const next = e + 1;
+          // Break reminders to fight time blindness — fires at ~25%, 50%, 75%, 90% of session
+          const marks = [
+            { at: Math.floor(total * 0.25), n: 1 },
+            { at: Math.floor(total * 0.5),  n: 2 },
+            { at: Math.floor(total * 0.75), n: 3 },
+            { at: Math.floor(total * 0.9),  n: 4 },
+          ];
+          const hit = marks.find((m) => m.at === next);
+          if (hit && next < total) {
+            const mins = Math.floor(next / 60);
+            const secs = next % 60;
+            const elapsedStr = mins > 0 ? mins + " min" + (secs ? " " + secs + "s" : "") : secs + "s";
+            showNotif("⏰ Break " + hit.n + " — you've been at it " + elapsedStr + " ✨");
+          }
+          if (next >= total) {
             if (timerRef.current) clearInterval(timerRef.current);
             setRunning(false); setSessions((s) => s + 1);
             triggerPose("dance", 28, "🎉 Session done! Dance it out, friend!");
             return total;
           }
-          return e + 1;
+          return next;
         });
       }, 1000);
     }
@@ -571,7 +643,7 @@ function App() {
     }
     const a = audioRef.current;
     if (muted) { a.pause(); return; }
-    if (a.src !== md.music) a.src = md.music;
+    if (a.src !== md.music) { a.src = md.music; a.load(); }
     const p = a.play();
     if (p && typeof p.catch === "function") p.catch(() => setMusicError("Tap the speaker to start music"));
   }, [mood, muted, md.music]);
@@ -595,7 +667,11 @@ function App() {
   const doPerch = () => triggerPose("perch", 22, "🌤️ Mochi's on the window perch");
   const doPet   = () => triggerPose("pet", 14, "💜 Petting Mochi — purr engaged");
   const doCandle = () => { setCandleLit((v) => !v); triggerPose("candle", 8, candleLit ? "🌙 Candle out" : "🕯️ Candle lit — cozy ritual"); };
-  const doPhone  = () => triggerPose("phone", 18, "📞 Calling a friend — you've got support");
+  const doPhone  = () => {
+    stopRinging(); startRinging();
+    triggerPose("phone", 18, "📞 Ring ring — calling a friend!");
+    setTimeout(stopRinging, 18500);
+  };
 
   const msgs = MSGS[pose] || MSGS.idle;
   const curMsg = msgs[msgIdx % msgs.length];
