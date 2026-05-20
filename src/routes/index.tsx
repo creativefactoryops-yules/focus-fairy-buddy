@@ -107,21 +107,30 @@ const CSS = `
 @media (min-width: 1280px) { .bd-shell { max-width: 1280px !important; } }
 `;
 
-type CharColors = { hair: string; skin: string; outfit?: string | null; fur: string };
+type CharColors = { hair: string; skin: string; outfit?: string | null; fur: string; hairLength?: string };
 
 function Girl({ pose, accent, colors }: { pose: string; accent: string; colors: CharColors }) {
   const { hair, skin } = colors;
   const pants = "#374151";
   const outfit = colors.outfit || accent;
+  const hairLen = colors.hairLength || "long";
   const isDancing = pose === "dance", isEating = pose === "eat";
   const isFeeding = pose === "feed",  isWorking = pose === "work";
   const isPetting = pose === "pet",   isCandle = pose === "candle";
   const isPhone = pose === "phone";
-  const btm = isDancing ? "22%" : "15%";
-  const lean = isPetting ? "rotate(-14deg) translateX(-78%)" : "translateX(-82%)";
-  // bigger / taller pixel girl (was 38 wide)
+  // Move her body to the activity instead of teleporting just an arm
+  let leftPct = "50%";
+  let translate = "translateX(-50%)";
+  let btm = "15%";
+  if (isDancing) btm = "22%";
+  if (isPetting) { leftPct = "36%"; translate = "translateX(-50%) rotate(-6deg)"; btm = "14%"; }
+  if (isPhone)   { leftPct = "66%"; translate = "translateX(-50%)"; }
+  if (isFeeding) { leftPct = "40%"; translate = "translateX(-50%)"; }
+  // Ponytail length per profile choice
+  const ponyH = hairLen === "short" ? 8 : hairLen === "medium" ? 16 : 24;
+  const ponyTop = hairLen === "short" ? 4 : 5;
   return (
-    <div style={{ position:"absolute", bottom:btm, left:"50%", transform:lean, transformOrigin:"bottom center", width:50, zIndex:5, transition:"bottom 0.55s cubic-bezier(0.34,1.56,0.64,1), transform 0.4s ease", animation: isDancing ? "girlSway 0.55s ease-in-out infinite" : "none" }}>
+    <div style={{ position:"absolute", bottom:btm, left:leftPct, transform: translate + " scale(1.55)", transformOrigin:"bottom center", width:50, zIndex:5, transition:"bottom 0.55s cubic-bezier(0.34,1.56,0.64,1), left 0.55s ease, transform 0.55s ease", animation: isDancing ? "girlSway 0.55s ease-in-out infinite" : "none" }}>
       <div style={{ position:"absolute", top:0, left:3, width:44, height:26, background:hair, borderRadius:"50% 50% 0 0", zIndex:0 }} />
       <div style={{ position:"absolute", top:3, left:7, width:36, height:31, background:skin, borderRadius:"45% 45% 40% 40%", zIndex:2, animation: isDancing ? "headDance 0.55s ease-in-out infinite" : isWorking ? "headbob 2s ease-in-out infinite" : "breathe 3.5s ease-in-out infinite" }}>
         <div style={{ position:"absolute", top:12, left:7, width:6, height:6, background:"#1e1b4b", borderRadius:"50%", animation:"gblink 4.5s ease-in-out infinite" }} />
@@ -134,22 +143,22 @@ function Girl({ pose, accent, colors }: { pose: string; accent: string; colors: 
       </div>
       <div style={{ position:"absolute", top:3, left:4, width:18, height:13, background:hair, borderRadius:"50% 30% 40% 50%", zIndex:3 }} />
       <div style={{ position:"absolute", top:1, left:21, width:12, height:9, background:hair, borderRadius:"30% 50% 50% 30%", zIndex:3 }} />
-      <div style={{ position:"absolute", top:5, right:0, width:10, height:21, background:hair, borderRadius:"40% 60% 60% 40%", zIndex:1, transformOrigin:"top center", animation: isDancing ? "ponyDance 0.4s ease-in-out infinite" : "ponyIdle 3s ease-in-out infinite" }} />
+      {/* ponytail — length driven by profile */}
+      <div style={{ position:"absolute", top:ponyTop, right:0, width:10, height:ponyH, background:hair, borderRadius:"40% 60% 60% 40%", zIndex:1, transformOrigin:"top center", animation: isDancing ? "ponyDance 0.4s ease-in-out infinite" : "ponyIdle 3s ease-in-out infinite" }} />
       {/* Left arm */}
       <div style={{ position:"absolute", top: isDancing ? 38 : 33, left: isDancing ? -6 : 1, width:7, height: isPetting ? 22 : 20, background:skin, borderRadius:5, zIndex:1, transformOrigin: "top center", animation: isDancing ? "waveL 0.52s ease-in-out infinite" : isFeeding ? "reachL 1.4s ease-in-out infinite" : isPetting ? "petArm 0.65s ease-in-out infinite" : isWorking ? "typeL 0.38s ease-in-out infinite" : "none", transition:"top 0.4s ease,left 0.4s ease" }} />
-      {/* Torso / outfit (NEW outfit: cropped sweater + skirt look via gradient) */}
+      {/* Torso / outfit */}
       <div style={{ position:"absolute", top:31, left:5, width:40, height:25, background: "linear-gradient(180deg," + outfit + "ee 0%," + outfit + "cc 60%," + outfit + "dd 100%)", borderRadius:"22% 22% 12% 12%", zIndex:2, animation: isPetting ? "girlSway 0.7s ease-in-out infinite" : "breathe 3s ease-in-out infinite", boxShadow:"inset 0 2px 0 rgba(255,255,255,0.18)" }}>
-        {/* outfit detail: collar */}
         <div style={{ position:"absolute", top:0, left:"50%", transform:"translateX(-50%)", width:14, height:3, background:"rgba(255,255,255,0.35)", borderRadius:"0 0 6px 6px" }} />
-        {/* belt line */}
         <div style={{ position:"absolute", bottom:8, left:0, right:0, height:2, background:"rgba(0,0,0,0.18)" }} />
       </div>
       {/* Right arm */}
-      <div style={{ position:"absolute", top: isDancing ? 38 : 33, right: isDancing ? -6 : 1, width:7, height: isEating ? 22 : isCandle || isPhone ? 22 : 20, background:skin, borderRadius:5, zIndex:isPhone ? 7 : 1, transformOrigin: isDancing || isEating || isCandle || isPhone ? "bottom center" : "top center", animation: isDancing ? "waveR 0.52s ease-in-out 0.26s infinite" : isEating ? "eatArm 1.1s ease-in-out infinite" : isCandle ? "girlReachSwing 0.9s ease-in-out infinite" : isPhone ? "phoneArm 1.6s ease-in-out infinite" : isWorking ? "typeR 0.38s ease-in-out 0.19s infinite" : "none", transition:"top 0.4s ease,right 0.4s ease" }} />
-      {/* Phone in hand when on call */}
+      <div style={{ position:"absolute", top: isDancing ? 38 : isPhone ? 22 : 33, right: isDancing ? -6 : isPhone ? -2 : 1, width:7, height: isEating ? 22 : isCandle || isPhone ? 22 : 20, background:skin, borderRadius:5, zIndex:isPhone ? 7 : 1, transformOrigin: isDancing || isEating || isCandle || isPhone ? "bottom center" : "top center", animation: isDancing ? "waveR 0.52s ease-in-out 0.26s infinite" : isEating ? "eatArm 1.1s ease-in-out infinite" : isCandle ? "girlReachSwing 0.9s ease-in-out infinite" : isPhone ? "phoneArm 1.6s ease-in-out infinite" : isWorking ? "typeR 0.38s ease-in-out 0.19s infinite" : "none", transition:"top 0.4s ease,right 0.4s ease" }} />
+      {/* Phone handset held up to ear when calling */}
       {isPhone && (
-        <div style={{ position:"absolute", top:30, right:-4, width:10, height:14, background:"#fb7185", borderRadius:"30% 30% 50% 50%", zIndex:8, boxShadow:"0 1px 3px rgba(0,0,0,0.4)", border:"1px solid #be123c", animation:"phoneRing 0.6s ease-in-out infinite" }}>
-          <div style={{ position:"absolute", top:2, left:2, right:2, height:3, background:"rgba(0,0,0,0.3)", borderRadius:1 }} />
+        <div style={{ position:"absolute", top:8, right:-6, width:12, height:18, background:"#fb7185", borderRadius:"40% 40% 60% 60%", zIndex:8, boxShadow:"0 1px 3px rgba(0,0,0,0.4)", border:"1px solid #be123c", animation:"phoneRing 0.35s ease-in-out infinite" }}>
+          <div style={{ position:"absolute", top:2, left:3, right:3, height:3, background:"rgba(0,0,0,0.35)", borderRadius:1 }} />
+          <div style={{ position:"absolute", bottom:2, left:3, right:3, height:3, background:"rgba(0,0,0,0.35)", borderRadius:1 }} />
         </div>
       )}
       {isEating && <div style={{ position:"absolute", top:33, right:0, width:2, height:18, background:"#9ca3af", borderRadius:1, transformOrigin:"bottom center", animation:"eatArm 1.1s ease-in-out infinite", zIndex:6 }} />}
