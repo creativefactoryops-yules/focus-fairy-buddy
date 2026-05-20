@@ -549,6 +549,7 @@ function App() {
   // Character colors from profile (or defaults)
   const colors: CharColors = {
     hair: profile?.hair_color || "#2d1b69",
+    hairLength: (profile as any)?.hair_length || "long",
     skin: profile?.skin_color || "#f5c5a3",
     outfit: profile?.outfit_color || accent,
     fur: profile?.cat_fur_color || "#d4a0d4",
@@ -561,17 +562,65 @@ function App() {
     poseRef.current = setTimeout(() => { setPose(runningRef.current ? "work" : "idle"); }, sec * 1000);
   };
 
+  // --- Web Audio: synthesized phone ring (no asset needed) ---
+  const ringCtxRef = useRef<{ ctx: AudioContext; stop: () => void } | null>(null);
+  const startRinging = () => {
+    try {
+      const Ctx: any = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!Ctx) return;
+      const ctx: AudioContext = new Ctx();
+      const stops: Array<() => void> = [];
+      const ringOnce = (startAt: number) => {
+        // classic North-American style ring: dual tone 440Hz + 480Hz for 2s, then 4s silence
+        const dur = 2;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, startAt);
+        gain.gain.linearRampToValueAtTime(0.18, startAt + 0.04);
+        gain.gain.setValueAtTime(0.18, startAt + dur - 0.05);
+        gain.gain.linearRampToValueAtTime(0, startAt + dur);
+        gain.connect(ctx.destination);
+        [440, 480].forEach((f) => {
+          const o = ctx.createOscillator();
+          o.type = "sine"; o.frequency.value = f;
+          o.connect(gain);
+          o.start(startAt); o.stop(startAt + dur);
+          stops.push(() => { try { o.stop(); } catch {} });
+        });
+      };
+      const t0 = ctx.currentTime + 0.05;
+      for (let i = 0; i < 3; i++) ringOnce(t0 + i * 6); // 3 rings over ~18s
+      ringCtxRef.current = { ctx, stop: () => { stops.forEach((s) => s()); ctx.close().catch(() => {}); } };
+    } catch {}
+  };
+  const stopRinging = () => { ringCtxRef.current?.stop(); ringCtxRef.current = null; };
+  useEffect(() => () => stopRinging(), []);
+
   useEffect(() => {
     if (running) {
       timerRef.current = setInterval(() => {
         setElapsed((e) => {
-          if (e + 1 >= total) {
+          const next = e + 1;
+          // Break reminders to fight time blindness — fires at ~25%, 50%, 75%, 90% of session
+          const marks = [
+            { at: Math.floor(total * 0.25), n: 1 },
+            { at: Math.floor(total * 0.5),  n: 2 },
+            { at: Math.floor(total * 0.75), n: 3 },
+            { at: Math.floor(total * 0.9),  n: 4 },
+          ];
+          const hit = marks.find((m) => m.at === next);
+          if (hit && next < total) {
+            const mins = Math.floor(next / 60);
+            const secs = next % 60;
+            const elapsedStr = mins > 0 ? mins + " min" + (secs ? " " + secs + "s" : "") : secs + "s";
+            showNotif("⏰ Break " + hit.n + " — you've been at it " + elapsedStr + " ✨");
+          }
+          if (next >= total) {
             if (timerRef.current) clearInterval(timerRef.current);
             setRunning(false); setSessions((s) => s + 1);
             triggerPose("dance", 28, "🎉 Session done! Dance it out, friend!");
             return total;
           }
-          return e + 1;
+          return next;
         });
       }, 1000);
     }
@@ -594,7 +643,7 @@ function App() {
     }
     const a = audioRef.current;
     if (muted) { a.pause(); return; }
-    if (a.src !== md.music) a.src = md.music;
+    if (a.src !== md.music) { a.src = md.music; a.load(); }
     const p = a.play();
     if (p && typeof p.catch === "function") p.catch(() => setMusicError("Tap the speaker to start music"));
   }, [mood, muted, md.music]);
@@ -618,7 +667,11 @@ function App() {
   const doPerch = () => triggerPose("perch", 22, "🌤️ Mochi's on the window perch");
   const doPet   = () => triggerPose("pet", 14, "💜 Petting Mochi — purr engaged");
   const doCandle = () => { setCandleLit((v) => !v); triggerPose("candle", 8, candleLit ? "🌙 Candle out" : "🕯️ Candle lit — cozy ritual"); };
-  const doPhone  = () => triggerPose("phone", 18, "📞 Calling a friend — you've got support");
+  const doPhone  = () => {
+    stopRinging(); startRinging();
+    triggerPose("phone", 18, "📞 Ring ring — calling a friend!");
+    setTimeout(stopRinging, 18500);
+  };
 
   const msgs = MSGS[pose] || MSGS.idle;
   const curMsg = msgs[msgIdx % msgs.length];
