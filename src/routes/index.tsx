@@ -444,6 +444,7 @@ function TimerRing({ elapsed, duration, accent }: { elapsed: number; duration: n
 
 const HAIR_OPTIONS = ["#2d1b69","#7c2d12","#0f172a","#facc15","#dc2626","#a78bfa"];
 const SKIN_OPTIONS = ["#f5c5a3","#e0a878","#c08763","#8b5a3c","#fde2d3","#5c3a24"];
+const OUTFIT_OPTIONS = ["#a78bfa","#f472b6","#34d399","#60a5fa","#fbbf24","#fb7185","#f5f5f4","#1f2937"];
 const CAT_FUR_OPTIONS = [
   { fur:"#d4a0d4", label:"Lilac"   },
   { fur:"#f5e6c8", label:"Cream"   },
@@ -452,26 +453,39 @@ const CAT_FUR_OPTIONS = [
   { fur:"#9ca3af", label:"Silver"  },
   { fur:"#1f1f1f", label:"Onyx"    },
 ];
+const HAIR_LENGTHS = ["short", "medium", "long"];
 
 function CharacterEditor({ onClose }: { onClose: () => void }) {
   const { profile, updateProfile } = useAuth();
   const [hair, setHair] = useState(profile?.hair_color || HAIR_OPTIONS[0]);
+  const [hairLength, setHairLength] = useState((profile as any)?.hair_length || "long");
   const [skin, setSkin] = useState(profile?.skin_color || SKIN_OPTIONS[0]);
+  const [outfit, setOutfit] = useState(profile?.outfit_color || OUTFIT_OPTIONS[0]);
   const [fur, setFur]   = useState(profile?.cat_fur_color || CAT_FUR_OPTIONS[0].fur);
   const [busy, setBusy] = useState(false);
   const save = async () => {
     setBusy(true);
-    await updateProfile({ hair_color: hair, skin_color: skin, cat_fur_color: fur });
+    await updateProfile({ hair_color: hair, hair_length: hairLength, skin_color: skin, outfit_color: outfit, cat_fur_color: fur } as any);
     setBusy(false); onClose();
   };
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", zIndex:70, display:"flex", alignItems:"center", justifyContent:"center", padding:16, backdropFilter:"blur(6px)" }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background:"linear-gradient(180deg,#1a1228,#0e0a18)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:18, padding:20, width:"100%", maxWidth:380, color:"#f1f5f9" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background:"linear-gradient(180deg,#1a1228,#0e0a18)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:18, padding:20, width:"100%", maxWidth:380, color:"#f1f5f9", maxHeight:"90vh", overflowY:"auto" }}>
         <h2 style={{ margin:"0 0 4px", fontSize:18, fontWeight:800 }}>Customize your friend</h2>
-        <p style={{ margin:"0 0 14px", fontSize:12, color:"rgba(255,255,255,0.5)" }}>Pick your pixel-girl look and Mochi's coat.</p>
-        <Swatches label="Hair"  values={HAIR_OPTIONS} selected={hair} onPick={setHair} />
+        <p style={{ margin:"0 0 14px", fontSize:12, color:"rgba(255,255,255,0.5)" }}>Pick your pixel-girl look, outfit, and Mochi's coat.</p>
+        <Swatches label="Hair color"  values={HAIR_OPTIONS} selected={hair} onPick={setHair} />
+        <div style={{ marginBottom:12 }}>
+          <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginBottom:6, letterSpacing:1, textTransform:"uppercase" }}>Hair length</div>
+          <div style={{ display:"flex", gap:6 }}>
+            {HAIR_LENGTHS.map((l) => (
+              <button key={l} onClick={() => setHairLength(l)}
+                style={{ flex:1, padding:"8px 0", borderRadius:8, border: hairLength === l ? "2px solid #fff" : "1px solid rgba(255,255,255,0.15)", background: hairLength === l ? "rgba(255,255,255,0.1)" : "transparent", color:"#f1f5f9", fontSize:12, fontWeight:600, cursor:"pointer", textTransform:"capitalize" }}>{l}</button>
+            ))}
+          </div>
+        </div>
         <Swatches label="Skin"  values={SKIN_OPTIONS} selected={skin} onPick={setSkin} />
-        <Swatches label="Mochi" values={CAT_FUR_OPTIONS.map((c) => c.fur)} selected={fur} onPick={setFur} />
+        <Swatches label="Outfit"  values={OUTFIT_OPTIONS} selected={outfit} onPick={setOutfit} />
+        <Swatches label="Mochi's coat" values={CAT_FUR_OPTIONS.map((c) => c.fur)} selected={fur} onPick={setFur} />
         <div style={{ display:"flex", gap:8, marginTop:12 }}>
           <button onClick={onClose} style={btnGhost}>Cancel</button>
           <button onClick={save} disabled={busy} style={{ ...btnSolid, flex:1 }}>{busy ? "Saving…" : "Save"}</button>
