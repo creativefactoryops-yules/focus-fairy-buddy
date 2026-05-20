@@ -21,6 +21,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           hair_color: string
+          hair_length: string
           id: string
           outfit_color: string | null
           skin_color: string
@@ -32,6 +33,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           hair_color?: string
+          hair_length?: string
           id: string
           outfit_color?: string | null
           skin_color?: string
@@ -43,6 +45,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           hair_color?: string
+          hair_length?: string
           id?: string
           outfit_color?: string | null
           skin_color?: string

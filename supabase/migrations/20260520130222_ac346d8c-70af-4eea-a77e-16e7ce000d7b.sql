@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS hair_length text NOT NULL DEFAULT 'long';
