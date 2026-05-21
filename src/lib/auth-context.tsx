@@ -12,7 +12,7 @@ export type Profile = {
   cat_fur_color: string;
   cat_breed: string;
   character_type: string; // 'girl' | 'boy'
-  room_layout: Record<string, { x: number; y: number }>;
+  room_layout: Record<string, { x: number; y: number }> | any;
   intro_seen: boolean;
 };
 
