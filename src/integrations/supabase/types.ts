@@ -18,36 +18,45 @@ export type Database = {
         Row: {
           cat_breed: string
           cat_fur_color: string
+          character_type: string
           created_at: string
           display_name: string | null
           hair_color: string
           hair_length: string
           id: string
+          intro_seen: boolean
           outfit_color: string | null
+          room_layout: Json
           skin_color: string
           updated_at: string
         }
         Insert: {
           cat_breed?: string
           cat_fur_color?: string
+          character_type?: string
           created_at?: string
           display_name?: string | null
           hair_color?: string
           hair_length?: string
           id: string
+          intro_seen?: boolean
           outfit_color?: string | null
+          room_layout?: Json
           skin_color?: string
           updated_at?: string
         }
         Update: {
           cat_breed?: string
           cat_fur_color?: string
+          character_type?: string
           created_at?: string
           display_name?: string | null
           hair_color?: string
           hair_length?: string
           id?: string
+          intro_seen?: boolean
           outfit_color?: string | null
+          room_layout?: Json
           skin_color?: string
           updated_at?: string
         }
