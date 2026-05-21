@@ -325,7 +325,7 @@ function Draggable({
   id, offset, onMove, children, style, zIndex,
 }: {
   id: string; offset?: Pt; onMove: (id: string, pt: Pt) => void;
-  children: React.ReactNode; style?: React.CSSProperties; zIndex?: number;
+  children?: React.ReactNode; style?: React.CSSProperties; zIndex?: number;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
