@@ -685,11 +685,11 @@ function App() {
 
         {/* Top bar */}
         <div style={{ position:"sticky", top:0, zIndex:50, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"6px 4px 10px", marginBottom:8, background:"linear-gradient(180deg," + md.bg + " 70%,transparent)" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-            <img src="/cf-logo.png" alt="CreativeFactory.studio" style={{ width:36, height:36, objectFit:"contain", borderRadius:8, filter:"drop-shadow(0 0 6px " + accent + "88)" }} />
-            <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", lineHeight:1.15 }}>
-              <div style={{ fontWeight:800, color:"#f1f5f9", fontSize:12 }}>Body Double</div>
-              <div>{displayName}</div>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <img src="/cf-monogram.png" alt="CreativeFactory.studio" style={{ height:34, width:34, objectFit:"contain", filter:"drop-shadow(0 0 8px " + accent + "66)" }} />
+            <div style={{ lineHeight:1.15 }}>
+              <div style={{ fontWeight:800, color:"#f1f5f9", fontSize:13, letterSpacing:0.3 }}>Body Double</div>
+              <div style={{ fontSize:10, color:"rgba(255,255,255,0.55)" }}>{displayName}</div>
             </div>
           </div>
           <div style={{ display:"flex", alignItems:"center", gap:6 }}>
