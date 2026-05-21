@@ -11,6 +11,9 @@ export type Profile = {
   outfit_color: string | null;
   cat_fur_color: string;
   cat_breed: string;
+  character_type: string; // 'girl' | 'boy'
+  room_layout: Record<string, { x: number; y: number }>;
+  intro_seen: boolean;
 };
 
 type Ctx = {
