@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loadProfile = async (uid: string) => {
     const { data } = await supabase.from("profiles").select("*").eq("id", uid).maybeSingle();
-    setProfile((data as Profile) ?? null);
+    setProfile((data as unknown as Profile) ?? null);
   };
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateProfile: async (patch) => {
       if (!user) return;
       const { data } = await supabase.from("profiles").update(patch).eq("id", user.id).select().single();
-      if (data) setProfile(data as Profile);
+      if (data) setProfile(data as unknown as Profile);
     },
   };
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
