@@ -1299,7 +1299,7 @@ function App() {
                   </div>
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:5 }}>
                     {MOODS.map((m) => (
-                      <button key={m.id} onClick={() => setMood(m.id)}
+                      <button key={m.id} onClick={() => { setMood(m.id); void track("theme_change", { theme: m.id }); }}
                         style={{ padding:"7px 3px", borderRadius:10, border:"1px solid", fontSize:10, fontWeight:700, cursor:"pointer", textAlign:"center", borderColor: mood === m.id ? m.accent : "rgba(255,255,255,0.07)", background: mood === m.id ? m.accent + "22" : "rgba(255,255,255,0.02)", color: mood === m.id ? m.accent : "rgba(255,255,255,0.45)" }}>
                         {m.label}
                       </button>
