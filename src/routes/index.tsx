@@ -1132,8 +1132,13 @@ function App() {
               <div className="bd-stage">
                 <div style={{ position:"absolute", inset:0 }}>
                   <Room mood={mood} pose={pose} accent={accent} candleLit={candleLit} layout={layout} onMove={onMoveItem} dialing={dialing} />
-                  <Character pose={pose} accent={accent} colors={colors} kind={kind} onTap={onTapGirl} tapBurst={tapGirl} />
-                  <Cat pose={pose} accent={accent} colors={colors} onTap={onTapCat} tapBurst={tapCat} />
+                  {/* Scale wrapper — makes friend + Mochi smaller so the room has more breathing room for new items */}
+                  <div style={{ position:"absolute", inset:0, transform:"scale(0.72)", transformOrigin:"50% 100%", pointerEvents:"none" }}>
+                    <div style={{ position:"absolute", inset:0, pointerEvents:"auto" }}>
+                      <Character pose={pose} accent={accent} colors={colors} kind={kind} onTap={onTapGirl} tapBurst={tapGirl} facialHair={profile?.facial_hair || "none"} accessory={profile?.accessory || "none"} />
+                      <Cat pose={pose} accent={accent} colors={colors} onTap={onTapCat} tapBurst={tapCat} />
+                    </div>
+                  </div>
                   <Confetti active={pose === "dance"} accent={accent} />
                   {notif.text && <Notif text={notif.text} accent={accent} id={notif.id} />}
                 </div>
