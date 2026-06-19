@@ -654,46 +654,64 @@ const CAT_FUR_OPTIONS = [
   { fur:"#1f1f1f", label:"Onyx"    },
 ];
 const HAIR_LENGTHS = ["short", "medium", "long"];
+const HAIR_STYLES_GIRL = ["default","ponytail","buns","bob","braids","wavy"];
+const HAIR_STYLES_BOY  = ["default","buzz","messy","slick","curly","mohawk"];
+const FACIAL_HAIR = ["none","stubble","mustache","goatee","fullbeard"];
+const ACCESSORIES = ["none","glasses","headphones","hat","flower","earrings"];
 
-function CharacterEditor({ onClose, onReplayIntro, resetLayout }: { onClose: () => void; onReplayIntro: () => void; resetLayout: () => void }) {
+function CharacterEditor({ onClose, onReplayIntro, resetLayout, kind }: { onClose: () => void; onReplayIntro: () => void; resetLayout: () => void; kind: "girl" | "boy" }) {
   const { profile, updateProfile } = useAuth();
   const [hair, setHair] = useState(profile?.hair_color || HAIR_OPTIONS[0]);
   const [hairLength, setHairLength] = useState(profile?.hair_length || "long");
+  const [hairStyle, setHairStyle] = useState(profile?.hair_style || "default");
   const [skin, setSkin] = useState(profile?.skin_color || SKIN_OPTIONS[0]);
   const [outfit, setOutfit] = useState(profile?.outfit_color || OUTFIT_OPTIONS[0]);
   const [fur, setFur]   = useState(profile?.cat_fur_color || CAT_FUR_OPTIONS[0].fur);
+  const [facialHair, setFacialHair] = useState(profile?.facial_hair || "none");
+  const [accessory, setAccessory] = useState(profile?.accessory || "none");
   const [busy, setBusy] = useState(false);
+  const styles = kind === "boy" ? HAIR_STYLES_BOY : HAIR_STYLES_GIRL;
   const save = async () => {
     setBusy(true);
-    await updateProfile({ hair_color: hair, hair_length: hairLength, skin_color: skin, outfit_color: outfit, cat_fur_color: fur } as any);
+    await updateProfile({ hair_color: hair, hair_length: hairLength, hair_style: hairStyle, skin_color: skin, outfit_color: outfit, cat_fur_color: fur, facial_hair: facialHair, accessory: accessory } as any);
     setBusy(false); onClose();
   };
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", zIndex:70, display:"flex", alignItems:"center", justifyContent:"center", padding:16, backdropFilter:"blur(6px)" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ background:"linear-gradient(180deg,#1a1228,#0e0a18)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:18, padding:20, width:"100%", maxWidth:380, color:"#f1f5f9", maxHeight:"90vh", overflowY:"auto" }}>
-        <h2 style={{ margin:"0 0 4px", fontSize:18, fontWeight:800 }}>Customize your friend</h2>
+        <h2 style={{ margin:"0 0 4px", fontSize:18, fontWeight:800 }}>Customize your {kind === "boy" ? "buddy" : "friend"}</h2>
         <p style={{ margin:"0 0 14px", fontSize:12, color:"rgba(255,255,255,0.5)" }}>Pick your look, outfit, and Mochi's coat.</p>
         <Swatches label="Hair color"  values={HAIR_OPTIONS} selected={hair} onPick={setHair} />
-        <div style={{ marginBottom:12 }}>
-          <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginBottom:6, letterSpacing:1, textTransform:"uppercase" }}>Hair length</div>
-          <div style={{ display:"flex", gap:6 }}>
-            {HAIR_LENGTHS.map((l) => (
-              <button key={l} onClick={() => setHairLength(l)}
-                style={{ flex:1, padding:"8px 0", borderRadius:8, border: hairLength === l ? "2px solid #fff" : "1px solid rgba(255,255,255,0.15)", background: hairLength === l ? "rgba(255,255,255,0.1)" : "transparent", color:"#f1f5f9", fontSize:12, fontWeight:600, cursor:"pointer", textTransform:"capitalize" }}>{l}</button>
-            ))}
-          </div>
-        </div>
+        <Pills label="Hair length" values={HAIR_LENGTHS} selected={hairLength} onPick={setHairLength} />
+        <Pills label="Hair style" values={styles} selected={hairStyle} onPick={setHairStyle} />
+        {kind === "boy" && (
+          <Pills label="Facial hair" values={FACIAL_HAIR} selected={facialHair} onPick={setFacialHair} />
+        )}
+        <Pills label="Accessory" values={ACCESSORIES} selected={accessory} onPick={setAccessory} />
         <Swatches label="Skin"  values={SKIN_OPTIONS} selected={skin} onPick={setSkin} />
         <Swatches label="Outfit"  values={OUTFIT_OPTIONS} selected={outfit} onPick={setOutfit} />
         <Swatches label="Mochi's coat" values={CAT_FUR_OPTIONS.map((c) => c.fur)} selected={fur} onPick={setFur} />
         <div style={{ display:"flex", gap:8, marginTop:8, marginBottom:12 }}>
-          <button onClick={onReplayIntro} style={{ ...btnGhost, flex:1 }}>🎬 Show intro again</button>
+          <button onClick={onReplayIntro} style={{ ...btnGhost, flex:1 }}>🎬 Replay onboarding</button>
           <button onClick={resetLayout} style={{ ...btnGhost, flex:1 }}>↺ Reset room layout</button>
         </div>
         <div style={{ display:"flex", gap:8 }}>
           <button onClick={onClose} style={btnGhost}>Cancel</button>
           <button onClick={save} disabled={busy} style={{ ...btnSolid, flex:1 }}>{busy ? "Saving…" : "Save"}</button>
         </div>
+      </div>
+    </div>
+  );
+}
+function Pills({ label, values, selected, onPick }: { label: string; values: string[]; selected: string; onPick: (v: string) => void }) {
+  return (
+    <div style={{ marginBottom:12 }}>
+      <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginBottom:6, letterSpacing:1, textTransform:"uppercase" }}>{label}</div>
+      <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+        {values.map((l) => (
+          <button key={l} onClick={() => onPick(l)}
+            style={{ padding:"7px 11px", borderRadius:8, border: selected === l ? "2px solid #fff" : "1px solid rgba(255,255,255,0.15)", background: selected === l ? "rgba(255,255,255,0.1)" : "transparent", color:"#f1f5f9", fontSize:11.5, fontWeight:600, cursor:"pointer", textTransform:"capitalize" }}>{l}</button>
+        ))}
       </div>
     </div>
   );
