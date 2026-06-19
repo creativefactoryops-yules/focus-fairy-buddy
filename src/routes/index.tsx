@@ -1105,11 +1105,13 @@ function App() {
             const secs = next % 60;
             const elapsedStr = mins > 0 ? mins + " min" + (secs ? " " + secs + "s" : "") : secs + "s";
             showNotif("⏰ Break " + hit.n + " — you've been at it " + elapsedStr + " ✨");
+            void track("break_taken", { mark: hit.n, elapsed: next });
           }
           if (next >= total) {
             if (timerRef.current) clearInterval(timerRef.current);
             setRunning(false); setSessions((s) => s + 1);
             triggerPose("dance", 28, "🎉 Session done! Dance it out, friend!");
+            void track("session_complete", { duration });
             return total;
           }
           return next;
