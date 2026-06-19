@@ -491,11 +491,35 @@ function Room({
         })}
       </div>
 
+      {/* Fireplace — draggable, in the back */}
+      <Draggable id="fireplace" offset={off("fireplace")} onMove={onMove} zIndex={2}
+        style={{ position:"absolute", bottom:"22%", left:"50%", marginLeft:-30, width:60, height:54 }}>
+        {/* mantel */}
+        <div style={{ position:"absolute", top:0, left:-4, right:-4, height:5, background:"#3b2a1a", borderRadius:2, boxShadow:"0 2px 4px rgba(0,0,0,0.5)" }} />
+        {/* brick surround */}
+        <div style={{ position:"absolute", top:5, left:0, right:0, bottom:0, background:"repeating-linear-gradient(0deg,#5a2a1a 0 4px,#3b1810 4px 5px), repeating-linear-gradient(90deg,transparent 0 9px,#3b1810 9px 10px)", border:"1.5px solid #2a1208", borderRadius:"2px 2px 0 0" }} />
+        {/* opening */}
+        <div style={{ position:"absolute", top:13, left:9, right:9, bottom:6, background:"#1a0a04", borderRadius:"4px 4px 1px 1px", overflow:"hidden", boxShadow:"inset 0 2px 6px rgba(0,0,0,0.8)" }}>
+          {/* logs */}
+          <div style={{ position:"absolute", bottom:2, left:3, right:3, height:5, background:"linear-gradient(180deg,#5a2a14,#2a1208)", borderRadius:2 }} />
+          {/* flames */}
+          <div style={{ position:"absolute", bottom:5, left:"50%", transform:"translateX(-50%)", width:18, height:18, background:"radial-gradient(ellipse at center bottom,#fbbf24 10%,#fb923c 45%,#dc2626 75%,transparent 100%)", borderRadius:"50% 50% 30% 30%", animation:"flame 0.6s ease-in-out infinite", filter:"blur(0.4px)" }} />
+          <div style={{ position:"absolute", bottom:6, left:"50%", transform:"translateX(-50%)", width:10, height:12, background:"radial-gradient(ellipse at center bottom,#fef3c7,#fbbf24 60%,transparent)", borderRadius:"50% 50% 40% 40%", animation:"flame 0.42s ease-in-out infinite", filter:"blur(0.3px)" }} />
+          {/* sparks */}
+          {[0,1,2].map((i) => (
+            <div key={i} style={{ position:"absolute", bottom:14, left: (12 + i*8) + "px", width:1.5, height:1.5, borderRadius:"50%", background:"#fde68a", animation:"candleSparkle 1.3s ease-out " + (i*0.4) + "s infinite" }} />
+          ))}
+        </div>
+        {/* warm glow on the floor */}
+        <div style={{ position:"absolute", bottom:-6, left:-8, right:-8, height:8, background:"radial-gradient(ellipse at center,rgba(251,146,60,0.55),transparent 70%)", pointerEvents:"none" }} />
+      </Draggable>
+
       {/* floor + desk (fixed) */}
       <div style={{ position:"absolute", bottom:0, left:0, right:0, height:"22%", background:"#1c1208" }} />
       <div style={{ position:"absolute", bottom:"22%", left:0, right:0, height:2, background:"rgba(0,0,0,0.3)" }} />
       <div style={{ position:"absolute", bottom:"19%", left:"9%", right:"9%", height:17, background:"#4b3b2a", borderRadius:"3px 3px 0 0", boxShadow:"0 4px 16px rgba(0,0,0,0.5)" }} />
       <div style={{ position:"absolute", bottom:"19%", left:"9%", right:"9%", height:3, background:"#5c4a35", borderRadius:"3px 3px 0 0" }} />
+
 
       {/* Money tree — draggable */}
       <Draggable id="money" offset={off("money")} onMove={onMove} zIndex={4}
