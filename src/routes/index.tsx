@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { Onboarding } from "@/components/Onboarding";
+import { track } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -120,12 +123,14 @@ type CharColors = { hair: string; skin: string; outfit?: string | null; fur: str
 
 /* ============ Character component (girl + boy) ============ */
 function Character({
-  pose, accent, colors, kind, onTap, tapBurst,
+  pose, accent, colors, kind, onTap, tapBurst, facialHair, accessory,
 }: {
   pose: string; accent: string; colors: CharColors;
   kind: "girl" | "boy";
   onTap: () => void;
   tapBurst: number;
+  facialHair?: string;
+  accessory?: string;
 }) {
   const { hair, skin } = colors;
   const pants = kind === "boy" ? "#1f2937" : "#374151";
@@ -273,6 +278,63 @@ function Character({
           </div>
           <div style={{ position:"absolute", top:-1, left:-1, width:30, height:6, background:"#8b5cf6", borderRadius:"50%" }} />
         </div>
+      )}
+
+      {/* Facial hair (boy) */}
+      {kind === "boy" && facialHair && facialHair !== "none" && (
+        <>
+          {facialHair === "stubble" && (
+            <div style={{ position:"absolute", top:24, left:11, width:28, height:8, background:"radial-gradient(ellipse at center,rgba(0,0,0,0.45),transparent 70%)", borderRadius:"50%", zIndex:5, pointerEvents:"none" }} />
+          )}
+          {facialHair === "mustache" && (
+            <div style={{ position:"absolute", top:23, left:14, width:22, height:4, background:hair, borderRadius:"40% 40% 50% 50%", zIndex:5, pointerEvents:"none", boxShadow:"0 1px 0 rgba(0,0,0,0.3)" }} />
+          )}
+          {facialHair === "goatee" && (
+            <>
+              <div style={{ position:"absolute", top:23, left:18, width:14, height:3, background:hair, borderRadius:"40% 40% 50% 50%", zIndex:5 }} />
+              <div style={{ position:"absolute", top:27, left:20, width:10, height:7, background:hair, borderRadius:"30% 30% 60% 60%", zIndex:5 }} />
+            </>
+          )}
+          {facialHair === "fullbeard" && (
+            <div style={{ position:"absolute", top:21, left:8, width:34, height:14, background:hair, borderRadius:"40% 40% 60% 60%", zIndex:4, pointerEvents:"none", boxShadow:"inset 0 -2px 0 rgba(0,0,0,0.2)" }} />
+          )}
+        </>
+      )}
+
+      {/* Accessory */}
+      {accessory && accessory !== "none" && (
+        <>
+          {accessory === "glasses" && (
+            <>
+              <div style={{ position:"absolute", top:14, left:10, width:11, height:8, border:"1.5px solid #1f2937", borderRadius:"50%", background:"rgba(255,255,255,0.1)", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:14, right:10, width:11, height:8, border:"1.5px solid #1f2937", borderRadius:"50%", background:"rgba(255,255,255,0.1)", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:17, left:20, width:5, height:1.5, background:"#1f2937", zIndex:6, pointerEvents:"none" }} />
+            </>
+          )}
+          {accessory === "headphones" && (
+            <>
+              <div style={{ position:"absolute", top:-1, left:6, right:6, height:8, border:"3px solid #1f2937", borderBottom:"none", borderRadius:"50% 50% 0 0", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:8, left:1, width:8, height:11, background:accent, borderRadius:"40% 40% 50% 50%", border:"1.5px solid #1f2937", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:8, right:1, width:8, height:11, background:accent, borderRadius:"40% 40% 50% 50%", border:"1.5px solid #1f2937", zIndex:6, pointerEvents:"none" }} />
+            </>
+          )}
+          {accessory === "hat" && (
+            <>
+              <div style={{ position:"absolute", top:-6, left:2, width:46, height:6, background:"#1f2937", borderRadius:"4px 4px 1px 1px", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:-14, left:9, width:32, height:10, background:"#1f2937", borderRadius:"50% 50% 6px 6px", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:-6, left:14, width:22, height:2, background: accent, zIndex:7, pointerEvents:"none" }} />
+            </>
+          )}
+          {accessory === "flower" && (
+            <div style={{ position:"absolute", top:2, left:30, fontSize:12, zIndex:6, pointerEvents:"none" }}>🌸</div>
+          )}
+          {accessory === "earrings" && (
+            <>
+              <div style={{ position:"absolute", top:20, left:1, width:3, height:3, borderRadius:"50%", background:"#fbbf24", boxShadow:"0 0 4px #fbbf24", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:20, right:1, width:3, height:3, borderRadius:"50%", background:"#fbbf24", boxShadow:"0 0 4px #fbbf24", zIndex:6, pointerEvents:"none" }} />
+            </>
+          )}
+        </>
       )}
     </div>
   );
@@ -488,11 +550,35 @@ function Room({
         })}
       </div>
 
+      {/* Fireplace — draggable, in the back */}
+      <Draggable id="fireplace" offset={off("fireplace")} onMove={onMove} zIndex={2}
+        style={{ position:"absolute", bottom:"22%", left:"50%", marginLeft:-30, width:60, height:54 }}>
+        {/* mantel */}
+        <div style={{ position:"absolute", top:0, left:-4, right:-4, height:5, background:"#3b2a1a", borderRadius:2, boxShadow:"0 2px 4px rgba(0,0,0,0.5)" }} />
+        {/* brick surround */}
+        <div style={{ position:"absolute", top:5, left:0, right:0, bottom:0, background:"repeating-linear-gradient(0deg,#5a2a1a 0 4px,#3b1810 4px 5px), repeating-linear-gradient(90deg,transparent 0 9px,#3b1810 9px 10px)", border:"1.5px solid #2a1208", borderRadius:"2px 2px 0 0" }} />
+        {/* opening */}
+        <div style={{ position:"absolute", top:13, left:9, right:9, bottom:6, background:"#1a0a04", borderRadius:"4px 4px 1px 1px", overflow:"hidden", boxShadow:"inset 0 2px 6px rgba(0,0,0,0.8)" }}>
+          {/* logs */}
+          <div style={{ position:"absolute", bottom:2, left:3, right:3, height:5, background:"linear-gradient(180deg,#5a2a14,#2a1208)", borderRadius:2 }} />
+          {/* flames */}
+          <div style={{ position:"absolute", bottom:5, left:"50%", transform:"translateX(-50%)", width:18, height:18, background:"radial-gradient(ellipse at center bottom,#fbbf24 10%,#fb923c 45%,#dc2626 75%,transparent 100%)", borderRadius:"50% 50% 30% 30%", animation:"flame 0.6s ease-in-out infinite", filter:"blur(0.4px)" }} />
+          <div style={{ position:"absolute", bottom:6, left:"50%", transform:"translateX(-50%)", width:10, height:12, background:"radial-gradient(ellipse at center bottom,#fef3c7,#fbbf24 60%,transparent)", borderRadius:"50% 50% 40% 40%", animation:"flame 0.42s ease-in-out infinite", filter:"blur(0.3px)" }} />
+          {/* sparks */}
+          {[0,1,2].map((i) => (
+            <div key={i} style={{ position:"absolute", bottom:14, left: (12 + i*8) + "px", width:1.5, height:1.5, borderRadius:"50%", background:"#fde68a", animation:"candleSparkle 1.3s ease-out " + (i*0.4) + "s infinite" }} />
+          ))}
+        </div>
+        {/* warm glow on the floor */}
+        <div style={{ position:"absolute", bottom:-6, left:-8, right:-8, height:8, background:"radial-gradient(ellipse at center,rgba(251,146,60,0.55),transparent 70%)", pointerEvents:"none" }} />
+      </Draggable>
+
       {/* floor + desk (fixed) */}
       <div style={{ position:"absolute", bottom:0, left:0, right:0, height:"22%", background:"#1c1208" }} />
       <div style={{ position:"absolute", bottom:"22%", left:0, right:0, height:2, background:"rgba(0,0,0,0.3)" }} />
       <div style={{ position:"absolute", bottom:"19%", left:"9%", right:"9%", height:17, background:"#4b3b2a", borderRadius:"3px 3px 0 0", boxShadow:"0 4px 16px rgba(0,0,0,0.5)" }} />
       <div style={{ position:"absolute", bottom:"19%", left:"9%", right:"9%", height:3, background:"#5c4a35", borderRadius:"3px 3px 0 0" }} />
+
 
       {/* Money tree — draggable */}
       <Draggable id="money" offset={off("money")} onMove={onMove} zIndex={4}
@@ -615,9 +701,9 @@ function TimerRing({ elapsed, duration, accent }: { elapsed: number; duration: n
   );
 }
 
-const HAIR_OPTIONS = ["#2d1b69","#7c2d12","#0f172a","#facc15","#dc2626","#a78bfa"];
+const HAIR_OPTIONS = ["#2d1b69","#7c2d12","#0f172a","#facc15","#dc2626","#a78bfa","#f472b6","#16a34a","#0891b2","#fb923c","#f5e6c8","#1f2937"];
 const SKIN_OPTIONS = ["#f5c5a3","#e0a878","#c08763","#8b5a3c","#fde2d3","#5c3a24"];
-const OUTFIT_OPTIONS = ["#a78bfa","#f472b6","#34d399","#60a5fa","#fbbf24","#fb7185","#f5f5f4","#1f2937"];
+const OUTFIT_OPTIONS = ["#a78bfa","#f472b6","#34d399","#60a5fa","#fbbf24","#fb7185","#f5f5f4","#1f2937","#dc2626","#0891b2","#16a34a","#f97316"];
 const CAT_FUR_OPTIONS = [
   { fur:"#d4a0d4", label:"Lilac"   },
   { fur:"#f5e6c8", label:"Cream"   },
@@ -627,46 +713,64 @@ const CAT_FUR_OPTIONS = [
   { fur:"#1f1f1f", label:"Onyx"    },
 ];
 const HAIR_LENGTHS = ["short", "medium", "long"];
+const HAIR_STYLES_GIRL = ["default","ponytail","buns","bob","braids","wavy"];
+const HAIR_STYLES_BOY  = ["default","buzz","messy","slick","curly","mohawk"];
+const FACIAL_HAIR = ["none","stubble","mustache","goatee","fullbeard"];
+const ACCESSORIES = ["none","glasses","headphones","hat","flower","earrings"];
 
-function CharacterEditor({ onClose, onReplayIntro, resetLayout }: { onClose: () => void; onReplayIntro: () => void; resetLayout: () => void }) {
+function CharacterEditor({ onClose, onReplayIntro, resetLayout, kind }: { onClose: () => void; onReplayIntro: () => void; resetLayout: () => void; kind: "girl" | "boy" }) {
   const { profile, updateProfile } = useAuth();
   const [hair, setHair] = useState(profile?.hair_color || HAIR_OPTIONS[0]);
   const [hairLength, setHairLength] = useState(profile?.hair_length || "long");
+  const [hairStyle, setHairStyle] = useState(profile?.hair_style || "default");
   const [skin, setSkin] = useState(profile?.skin_color || SKIN_OPTIONS[0]);
   const [outfit, setOutfit] = useState(profile?.outfit_color || OUTFIT_OPTIONS[0]);
   const [fur, setFur]   = useState(profile?.cat_fur_color || CAT_FUR_OPTIONS[0].fur);
+  const [facialHair, setFacialHair] = useState(profile?.facial_hair || "none");
+  const [accessory, setAccessory] = useState(profile?.accessory || "none");
   const [busy, setBusy] = useState(false);
+  const styles = kind === "boy" ? HAIR_STYLES_BOY : HAIR_STYLES_GIRL;
   const save = async () => {
     setBusy(true);
-    await updateProfile({ hair_color: hair, hair_length: hairLength, skin_color: skin, outfit_color: outfit, cat_fur_color: fur } as any);
+    await updateProfile({ hair_color: hair, hair_length: hairLength, hair_style: hairStyle, skin_color: skin, outfit_color: outfit, cat_fur_color: fur, facial_hair: facialHair, accessory: accessory } as any);
     setBusy(false); onClose();
   };
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", zIndex:70, display:"flex", alignItems:"center", justifyContent:"center", padding:16, backdropFilter:"blur(6px)" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ background:"linear-gradient(180deg,#1a1228,#0e0a18)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:18, padding:20, width:"100%", maxWidth:380, color:"#f1f5f9", maxHeight:"90vh", overflowY:"auto" }}>
-        <h2 style={{ margin:"0 0 4px", fontSize:18, fontWeight:800 }}>Customize your friend</h2>
+        <h2 style={{ margin:"0 0 4px", fontSize:18, fontWeight:800 }}>Customize your {kind === "boy" ? "buddy" : "friend"}</h2>
         <p style={{ margin:"0 0 14px", fontSize:12, color:"rgba(255,255,255,0.5)" }}>Pick your look, outfit, and Mochi's coat.</p>
         <Swatches label="Hair color"  values={HAIR_OPTIONS} selected={hair} onPick={setHair} />
-        <div style={{ marginBottom:12 }}>
-          <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginBottom:6, letterSpacing:1, textTransform:"uppercase" }}>Hair length</div>
-          <div style={{ display:"flex", gap:6 }}>
-            {HAIR_LENGTHS.map((l) => (
-              <button key={l} onClick={() => setHairLength(l)}
-                style={{ flex:1, padding:"8px 0", borderRadius:8, border: hairLength === l ? "2px solid #fff" : "1px solid rgba(255,255,255,0.15)", background: hairLength === l ? "rgba(255,255,255,0.1)" : "transparent", color:"#f1f5f9", fontSize:12, fontWeight:600, cursor:"pointer", textTransform:"capitalize" }}>{l}</button>
-            ))}
-          </div>
-        </div>
+        <Pills label="Hair length" values={HAIR_LENGTHS} selected={hairLength} onPick={setHairLength} />
+        <Pills label="Hair style" values={styles} selected={hairStyle} onPick={setHairStyle} />
+        {kind === "boy" && (
+          <Pills label="Facial hair" values={FACIAL_HAIR} selected={facialHair} onPick={setFacialHair} />
+        )}
+        <Pills label="Accessory" values={ACCESSORIES} selected={accessory} onPick={setAccessory} />
         <Swatches label="Skin"  values={SKIN_OPTIONS} selected={skin} onPick={setSkin} />
         <Swatches label="Outfit"  values={OUTFIT_OPTIONS} selected={outfit} onPick={setOutfit} />
         <Swatches label="Mochi's coat" values={CAT_FUR_OPTIONS.map((c) => c.fur)} selected={fur} onPick={setFur} />
         <div style={{ display:"flex", gap:8, marginTop:8, marginBottom:12 }}>
-          <button onClick={onReplayIntro} style={{ ...btnGhost, flex:1 }}>🎬 Show intro again</button>
+          <button onClick={onReplayIntro} style={{ ...btnGhost, flex:1 }}>🎬 Replay onboarding</button>
           <button onClick={resetLayout} style={{ ...btnGhost, flex:1 }}>↺ Reset room layout</button>
         </div>
         <div style={{ display:"flex", gap:8 }}>
           <button onClick={onClose} style={btnGhost}>Cancel</button>
           <button onClick={save} disabled={busy} style={{ ...btnSolid, flex:1 }}>{busy ? "Saving…" : "Save"}</button>
         </div>
+      </div>
+    </div>
+  );
+}
+function Pills({ label, values, selected, onPick }: { label: string; values: string[]; selected: string; onPick: (v: string) => void }) {
+  return (
+    <div style={{ marginBottom:12 }}>
+      <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginBottom:6, letterSpacing:1, textTransform:"uppercase" }}>{label}</div>
+      <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+        {values.map((l) => (
+          <button key={l} onClick={() => onPick(l)}
+            style={{ padding:"7px 11px", borderRadius:8, border: selected === l ? "2px solid #fff" : "1px solid rgba(255,255,255,0.15)", background: selected === l ? "rgba(255,255,255,0.1)" : "transparent", color:"#f1f5f9", fontSize:11.5, fontWeight:600, cursor:"pointer", textTransform:"capitalize" }}>{l}</button>
+        ))}
       </div>
     </div>
   );
@@ -734,9 +838,94 @@ function IntroScreen({ onClose, accent }: { onClose: () => void; accent: string 
   );
 }
 
+/* ============ Contacts modal — uses tel: / sms: deep links ============ */
+type Contact = { id: string; name: string; phone: string };
+function ContactsModal({ onClose, accent, userId, onCall, onText }: {
+  onClose: () => void; accent: string; userId: string | null;
+  onCall: () => void; onText: () => void;
+}) {
+  const [contacts, setContacts] = useState<Contact[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem("bd-contacts") || "[]"); } catch { return []; }
+  });
+  const [name, setName] = useState(""); const [phone, setPhone] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      const { data } = await supabase.from("contacts").select("*").eq("user_id", userId).order("name");
+      if (data) setContacts(data as any);
+    })();
+  }, [userId]);
+
+  const persist = (next: Contact[]) => {
+    setContacts(next);
+    if (typeof window !== "undefined") localStorage.setItem("bd-contacts", JSON.stringify(next));
+  };
+
+  const add = async () => {
+    const n = name.trim(), p = phone.trim();
+    if (!n || !p) return;
+    setBusy(true);
+    if (userId) {
+      const { data } = await supabase.from("contacts").insert({ user_id: userId, name: n, phone: p }).select().single();
+      if (data) persist([...contacts, data as any]);
+    } else {
+      persist([...contacts, { id: String(Date.now()), name: n, phone: p }]);
+    }
+    setName(""); setPhone(""); setBusy(false);
+  };
+  const remove = async (id: string) => {
+    if (userId) await supabase.from("contacts").delete().eq("id", id);
+    persist(contacts.filter((c) => c.id !== id));
+  };
+
+  return (
+    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.78)", zIndex:80, display:"flex", alignItems:"center", justifyContent:"center", padding:16, backdropFilter:"blur(8px)" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width:"100%", maxWidth:380, background:"linear-gradient(180deg,#1a1228,#0e0a18)", border:"1px solid " + accent + "55", borderRadius:18, padding:20, color:"#f1f5f9", maxHeight:"86vh", overflowY:"auto" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+          <h2 style={{ margin:0, fontSize:18, fontWeight:800 }}>📞 Your contacts</h2>
+          <button onClick={onClose} aria-label="Close" style={{ width:28, height:28, borderRadius:8, border:"1px solid rgba(255,255,255,0.12)", background:"transparent", color:"#fff", cursor:"pointer" }}>✕</button>
+        </div>
+        <p style={{ margin:"0 0 12px", fontSize:11.5, color:"rgba(255,255,255,0.55)" }}>Tap Call or Text — opens your device's dialer or messages.</p>
+
+        <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name"
+            style={{ flex:1, padding:"9px 10px", borderRadius:8, border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.05)", color:"#f1f5f9", fontSize:12.5 }} />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555…" inputMode="tel"
+            style={{ flex:1, padding:"9px 10px", borderRadius:8, border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.05)", color:"#f1f5f9", fontSize:12.5 }} />
+          <button onClick={add} disabled={busy} style={{ padding:"0 12px", borderRadius:8, border:"none", background:accent, color:"#0a0a0a", fontWeight:800, fontSize:12.5, cursor:"pointer" }}>Add</button>
+        </div>
+
+        <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+          {contacts.length === 0 && (
+            <div style={{ textAlign:"center", fontSize:12, color:"rgba(255,255,255,0.4)", padding:"18px 8px" }}>No contacts yet — add a friend above 💜</div>
+          )}
+          {contacts.map((c) => (
+            <div key={c.id} style={{ display:"flex", alignItems:"center", gap:8, padding:"9px 10px", borderRadius:10, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:13, fontWeight:700, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{c.name}</div>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>{c.phone}</div>
+              </div>
+              <a href={"tel:" + c.phone} onClick={() => onCall()}
+                style={{ padding:"7px 10px", borderRadius:8, background:accent, color:"#0a0a0a", fontSize:11.5, fontWeight:800, textDecoration:"none" }}>📞 Call</a>
+              <a href={"sms:" + c.phone} onClick={() => onText()}
+                style={{ padding:"7px 10px", borderRadius:8, border:"1px solid " + accent + "88", color:accent, fontSize:11.5, fontWeight:800, textDecoration:"none" }}>💬 Text</a>
+              <button onClick={() => remove(c.id)} aria-label="Delete" style={{ width:24, height:24, border:"none", background:"transparent", color:"rgba(255,255,255,0.3)", fontSize:14, cursor:"pointer" }}>×</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
 /* ============ App ============ */
 function App() {
-  const { user, profile, signOut, updateProfile } = useAuth();
+  const { user, profile, isAdmin, signOut, updateProfile } = useAuth();
   const [mood, setMood] = useState("focus");
   const [pose, setPose] = useState<PoseKey>("idle");
   const [running, setRunning] = useState(false);
@@ -772,20 +961,22 @@ function App() {
     if (user) void updateProfile({ character_type: k } as any);
   };
 
-  // Intro screen — show on first visit.
-  const [introOpen, setIntroOpen] = useState(false);
+  // Onboarding (full interactive walkthrough) — show on first visit.
+  const [onbOpen, setOnbOpen] = useState(false);
+  const [contactsOpen, setContactsOpen] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const localSeen = localStorage.getItem("bd-intro-seen") === "1";
-    const profSeen = profile?.intro_seen === true;
-    if (!localSeen && !profSeen) setIntroOpen(true);
-  }, [profile?.intro_seen]);
-  const closeIntro = () => {
-    setIntroOpen(false);
-    if (typeof window !== "undefined") localStorage.setItem("bd-intro-seen", "1");
-    if (user && !profile?.intro_seen) void updateProfile({ intro_seen: true } as any);
+    const localDone = localStorage.getItem("bd-onb-done") === "1";
+    const profDone = profile?.onboarding_completed === true;
+    if (!localDone && !profDone) setOnbOpen(true);
+  }, [profile?.onboarding_completed]);
+  const closeOnboarding = () => {
+    setOnbOpen(false);
+    if (typeof window !== "undefined") { localStorage.setItem("bd-onb-done", "1"); localStorage.setItem("bd-intro-seen", "1"); }
+    if (user) void updateProfile({ onboarding_completed: true, intro_seen: true } as any);
+    void track("onboarding_complete");
   };
-  const replayIntro = () => { setCharOpen(false); setIntroOpen(true); };
+  const replayIntro = () => { setCharOpen(false); setOnbOpen(true); };
 
   // Room layout (drag offsets) — localStorage always, profile when signed in
   const [layout, setLayout] = useState<Record<string, Pt>>(() => {
@@ -914,11 +1105,13 @@ function App() {
             const secs = next % 60;
             const elapsedStr = mins > 0 ? mins + " min" + (secs ? " " + secs + "s" : "") : secs + "s";
             showNotif("⏰ Break " + hit.n + " — you've been at it " + elapsedStr + " ✨");
+            void track("break_taken", { mark: hit.n, elapsed: next });
           }
           if (next >= total) {
             if (timerRef.current) clearInterval(timerRef.current);
             setRunning(false); setSessions((s) => s + 1);
             triggerPose("dance", 28, "🎉 Session done! Dance it out, friend!");
+            void track("session_complete", { duration });
             return total;
           }
           return next;
@@ -957,7 +1150,7 @@ function App() {
     });
   };
 
-  const startFocus  = () => { setElapsed(0); setRunning(true); setPose("work"); showNotif("🧠 Focus started, friend!"); };
+  const startFocus  = () => { setElapsed(0); setRunning(true); setPose("work"); showNotif("🧠 Focus started, friend!"); void track("session_start", { duration }); };
   const pauseFocus  = () => { setRunning(false); setPose("idle"); };
   const resumeFocus = () => { setRunning(true); setPose("work"); };
   const resetFocus  = () => { setRunning(false); setElapsed(0); setPose("idle"); };
@@ -1006,6 +1199,7 @@ function App() {
             {user ? (
               <>
                 <button onClick={() => setCharOpen(true)} style={topBtn(accent)}>🎨</button>
+                {isAdmin && <Link to="/admin" style={{ ...topBtn(accent), textDecoration:"none" }}>📊 Admin</Link>}
                 <button onClick={signOut} style={topBtn(accent)}>Sign out</button>
               </>
             ) : (
@@ -1028,8 +1222,13 @@ function App() {
               <div className="bd-stage">
                 <div style={{ position:"absolute", inset:0 }}>
                   <Room mood={mood} pose={pose} accent={accent} candleLit={candleLit} layout={layout} onMove={onMoveItem} dialing={dialing} />
-                  <Character pose={pose} accent={accent} colors={colors} kind={kind} onTap={onTapGirl} tapBurst={tapGirl} />
-                  <Cat pose={pose} accent={accent} colors={colors} onTap={onTapCat} tapBurst={tapCat} />
+                  {/* Scale wrapper — makes friend + Mochi smaller so the room has more breathing room for new items */}
+                  <div style={{ position:"absolute", inset:0, transform:"scale(0.72)", transformOrigin:"50% 100%", pointerEvents:"none" }}>
+                    <div style={{ position:"absolute", inset:0, pointerEvents:"auto" }}>
+                      <Character pose={pose} accent={accent} colors={colors} kind={kind} onTap={onTapGirl} tapBurst={tapGirl} facialHair={profile?.facial_hair || "none"} accessory={profile?.accessory || "none"} />
+                      <Cat pose={pose} accent={accent} colors={colors} onTap={onTapCat} tapBurst={tapCat} />
+                    </div>
+                  </div>
                   <Confetti active={pose === "dance"} accent={accent} />
                   {notif.text && <Notif text={notif.text} accent={accent} id={notif.id} />}
                 </div>
@@ -1084,7 +1283,7 @@ function App() {
                     { label: "💜 Pet Mochi", fn: doPet },
                     { label: "🌤️ Window perch", fn: doPerch },
                     { label: candleLit ? "🕯️ Candle ✓" : "🕯️ Light candle", fn: doCandle },
-                    { label: "📞 Call a friend", fn: doPhone },
+                    { label: "📞 Call a friend", fn: () => setContactsOpen(true) },
                   ].map((btn) => (
                     <button key={btn.label} onClick={btn.fn}
                       style={{ padding:"9px 4px", borderRadius:11, border:"1px solid rgba(255,255,255,0.09)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.7)", fontSize:10.5, fontWeight:600, cursor:"pointer", lineHeight:1.3, transition:"all 0.2s ease" }}>
@@ -1103,7 +1302,7 @@ function App() {
                   </div>
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:5 }}>
                     {MOODS.map((m) => (
-                      <button key={m.id} onClick={() => setMood(m.id)}
+                      <button key={m.id} onClick={() => { setMood(m.id); void track("theme_change", { theme: m.id }); }}
                         style={{ padding:"7px 3px", borderRadius:10, border:"1px solid", fontSize:10, fontWeight:700, cursor:"pointer", textAlign:"center", borderColor: mood === m.id ? m.accent : "rgba(255,255,255,0.07)", background: mood === m.id ? m.accent + "22" : "rgba(255,255,255,0.02)", color: mood === m.id ? m.accent : "rgba(255,255,255,0.45)" }}>
                         {m.label}
                       </button>
@@ -1178,8 +1377,9 @@ function App() {
           </div>
         )}
 
-        {charOpen && <CharacterEditor onClose={() => setCharOpen(false)} onReplayIntro={replayIntro} resetLayout={resetLayout} />}
-        {introOpen && <IntroScreen onClose={closeIntro} accent={accent} />}
+        {charOpen && <CharacterEditor onClose={() => setCharOpen(false)} onReplayIntro={replayIntro} resetLayout={resetLayout} kind={kind} />}
+        {contactsOpen && <ContactsModal onClose={() => setContactsOpen(false)} accent={accent} userId={user?.id || null} onCall={() => { void track("phone_call"); doPhone(); }} onText={() => void track("phone_sms")} />}
+        {onbOpen && <Onboarding onComplete={closeOnboarding} />}
       </main>
     </>
   );
