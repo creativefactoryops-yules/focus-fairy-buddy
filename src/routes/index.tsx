@@ -1199,6 +1199,7 @@ function App() {
             {user ? (
               <>
                 <button onClick={() => setCharOpen(true)} style={topBtn(accent)}>🎨</button>
+                {isAdmin && <Link to="/admin" style={{ ...topBtn(accent), textDecoration:"none" }}>📊 Admin</Link>}
                 <button onClick={signOut} style={topBtn(accent)}>Sign out</button>
               </>
             ) : (
