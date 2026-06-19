@@ -1289,8 +1289,9 @@ function App() {
           </div>
         )}
 
-        {charOpen && <CharacterEditor onClose={() => setCharOpen(false)} onReplayIntro={replayIntro} resetLayout={resetLayout} />}
-        {introOpen && <IntroScreen onClose={closeIntro} accent={accent} />}
+        {charOpen && <CharacterEditor onClose={() => setCharOpen(false)} onReplayIntro={replayIntro} resetLayout={resetLayout} kind={kind} />}
+        {contactsOpen && <ContactsModal onClose={() => setContactsOpen(false)} accent={accent} userId={user?.id || null} onCall={() => { void track("phone_call"); doPhone(); }} onText={() => void track("phone_sms")} />}
+        {onbOpen && <Onboarding onComplete={closeOnboarding} />}
       </main>
     </>
   );
