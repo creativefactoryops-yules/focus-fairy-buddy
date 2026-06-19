@@ -838,6 +838,91 @@ function IntroScreen({ onClose, accent }: { onClose: () => void; accent: string 
   );
 }
 
+/* ============ Contacts modal — uses tel: / sms: deep links ============ */
+type Contact = { id: string; name: string; phone: string };
+function ContactsModal({ onClose, accent, userId, onCall, onText }: {
+  onClose: () => void; accent: string; userId: string | null;
+  onCall: () => void; onText: () => void;
+}) {
+  const [contacts, setContacts] = useState<Contact[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem("bd-contacts") || "[]"); } catch { return []; }
+  });
+  const [name, setName] = useState(""); const [phone, setPhone] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      const { data } = await supabase.from("contacts").select("*").eq("user_id", userId).order("name");
+      if (data) setContacts(data as any);
+    })();
+  }, [userId]);
+
+  const persist = (next: Contact[]) => {
+    setContacts(next);
+    if (typeof window !== "undefined") localStorage.setItem("bd-contacts", JSON.stringify(next));
+  };
+
+  const add = async () => {
+    const n = name.trim(), p = phone.trim();
+    if (!n || !p) return;
+    setBusy(true);
+    if (userId) {
+      const { data } = await supabase.from("contacts").insert({ user_id: userId, name: n, phone: p }).select().single();
+      if (data) persist([...contacts, data as any]);
+    } else {
+      persist([...contacts, { id: String(Date.now()), name: n, phone: p }]);
+    }
+    setName(""); setPhone(""); setBusy(false);
+  };
+  const remove = async (id: string) => {
+    if (userId) await supabase.from("contacts").delete().eq("id", id);
+    persist(contacts.filter((c) => c.id !== id));
+  };
+
+  return (
+    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.78)", zIndex:80, display:"flex", alignItems:"center", justifyContent:"center", padding:16, backdropFilter:"blur(8px)" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width:"100%", maxWidth:380, background:"linear-gradient(180deg,#1a1228,#0e0a18)", border:"1px solid " + accent + "55", borderRadius:18, padding:20, color:"#f1f5f9", maxHeight:"86vh", overflowY:"auto" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+          <h2 style={{ margin:0, fontSize:18, fontWeight:800 }}>📞 Your contacts</h2>
+          <button onClick={onClose} aria-label="Close" style={{ width:28, height:28, borderRadius:8, border:"1px solid rgba(255,255,255,0.12)", background:"transparent", color:"#fff", cursor:"pointer" }}>✕</button>
+        </div>
+        <p style={{ margin:"0 0 12px", fontSize:11.5, color:"rgba(255,255,255,0.55)" }}>Tap Call or Text — opens your device's dialer or messages.</p>
+
+        <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name"
+            style={{ flex:1, padding:"9px 10px", borderRadius:8, border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.05)", color:"#f1f5f9", fontSize:12.5 }} />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555…" inputMode="tel"
+            style={{ flex:1, padding:"9px 10px", borderRadius:8, border:"1px solid rgba(255,255,255,0.12)", background:"rgba(255,255,255,0.05)", color:"#f1f5f9", fontSize:12.5 }} />
+          <button onClick={add} disabled={busy} style={{ padding:"0 12px", borderRadius:8, border:"none", background:accent, color:"#0a0a0a", fontWeight:800, fontSize:12.5, cursor:"pointer" }}>Add</button>
+        </div>
+
+        <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+          {contacts.length === 0 && (
+            <div style={{ textAlign:"center", fontSize:12, color:"rgba(255,255,255,0.4)", padding:"18px 8px" }}>No contacts yet — add a friend above 💜</div>
+          )}
+          {contacts.map((c) => (
+            <div key={c.id} style={{ display:"flex", alignItems:"center", gap:8, padding:"9px 10px", borderRadius:10, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:13, fontWeight:700, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{c.name}</div>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>{c.phone}</div>
+              </div>
+              <a href={"tel:" + c.phone} onClick={() => onCall()}
+                style={{ padding:"7px 10px", borderRadius:8, background:accent, color:"#0a0a0a", fontSize:11.5, fontWeight:800, textDecoration:"none" }}>📞 Call</a>
+              <a href={"sms:" + c.phone} onClick={() => onText()}
+                style={{ padding:"7px 10px", borderRadius:8, border:"1px solid " + accent + "88", color:accent, fontSize:11.5, fontWeight:800, textDecoration:"none" }}>💬 Text</a>
+              <button onClick={() => remove(c.id)} aria-label="Delete" style={{ width:24, height:24, border:"none", background:"transparent", color:"rgba(255,255,255,0.3)", fontSize:14, cursor:"pointer" }}>×</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
 /* ============ App ============ */
 function App() {
   const { user, profile, signOut, updateProfile } = useAuth();
