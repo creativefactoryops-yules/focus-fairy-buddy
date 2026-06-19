@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { Onboarding } from "@/components/Onboarding";
+import { track } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: App,
