@@ -642,9 +642,9 @@ function TimerRing({ elapsed, duration, accent }: { elapsed: number; duration: n
   );
 }
 
-const HAIR_OPTIONS = ["#2d1b69","#7c2d12","#0f172a","#facc15","#dc2626","#a78bfa"];
+const HAIR_OPTIONS = ["#2d1b69","#7c2d12","#0f172a","#facc15","#dc2626","#a78bfa","#f472b6","#16a34a","#0891b2","#fb923c","#f5e6c8","#1f2937"];
 const SKIN_OPTIONS = ["#f5c5a3","#e0a878","#c08763","#8b5a3c","#fde2d3","#5c3a24"];
-const OUTFIT_OPTIONS = ["#a78bfa","#f472b6","#34d399","#60a5fa","#fbbf24","#fb7185","#f5f5f4","#1f2937"];
+const OUTFIT_OPTIONS = ["#a78bfa","#f472b6","#34d399","#60a5fa","#fbbf24","#fb7185","#f5f5f4","#1f2937","#dc2626","#0891b2","#16a34a","#f97316"];
 const CAT_FUR_OPTIONS = [
   { fur:"#d4a0d4", label:"Lilac"   },
   { fur:"#f5e6c8", label:"Cream"   },
