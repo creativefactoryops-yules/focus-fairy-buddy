@@ -123,12 +123,14 @@ type CharColors = { hair: string; skin: string; outfit?: string | null; fur: str
 
 /* ============ Character component (girl + boy) ============ */
 function Character({
-  pose, accent, colors, kind, onTap, tapBurst,
+  pose, accent, colors, kind, onTap, tapBurst, facialHair, accessory,
 }: {
   pose: string; accent: string; colors: CharColors;
   kind: "girl" | "boy";
   onTap: () => void;
   tapBurst: number;
+  facialHair?: string;
+  accessory?: string;
 }) {
   const { hair, skin } = colors;
   const pants = kind === "boy" ? "#1f2937" : "#374151";
