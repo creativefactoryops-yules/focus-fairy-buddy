@@ -876,20 +876,22 @@ function App() {
     if (user) void updateProfile({ character_type: k } as any);
   };
 
-  // Intro screen — show on first visit.
-  const [introOpen, setIntroOpen] = useState(false);
+  // Onboarding (full interactive walkthrough) — show on first visit.
+  const [onbOpen, setOnbOpen] = useState(false);
+  const [contactsOpen, setContactsOpen] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const localSeen = localStorage.getItem("bd-intro-seen") === "1";
-    const profSeen = profile?.intro_seen === true;
-    if (!localSeen && !profSeen) setIntroOpen(true);
-  }, [profile?.intro_seen]);
-  const closeIntro = () => {
-    setIntroOpen(false);
-    if (typeof window !== "undefined") localStorage.setItem("bd-intro-seen", "1");
-    if (user && !profile?.intro_seen) void updateProfile({ intro_seen: true } as any);
+    const localDone = localStorage.getItem("bd-onb-done") === "1";
+    const profDone = profile?.onboarding_completed === true;
+    if (!localDone && !profDone) setOnbOpen(true);
+  }, [profile?.onboarding_completed]);
+  const closeOnboarding = () => {
+    setOnbOpen(false);
+    if (typeof window !== "undefined") { localStorage.setItem("bd-onb-done", "1"); localStorage.setItem("bd-intro-seen", "1"); }
+    if (user) void updateProfile({ onboarding_completed: true, intro_seen: true } as any);
+    void track("onboarding_complete");
   };
-  const replayIntro = () => { setCharOpen(false); setIntroOpen(true); };
+  const replayIntro = () => { setCharOpen(false); setOnbOpen(true); };
 
   // Room layout (drag offsets) — localStorage always, profile when signed in
   const [layout, setLayout] = useState<Record<string, Pt>>(() => {
