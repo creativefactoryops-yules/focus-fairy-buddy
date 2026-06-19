@@ -6,20 +6,25 @@ export type Profile = {
   id: string;
   display_name: string | null;
   hair_color: string;
-  hair_length: string; // 'short' | 'medium' | 'long'
+  hair_length: string;
+  hair_style: string;
   skin_color: string;
   outfit_color: string | null;
+  facial_hair: string;
+  accessory: string;
   cat_fur_color: string;
   cat_breed: string;
-  character_type: string; // 'girl' | 'boy'
+  character_type: string;
   room_layout: Record<string, { x: number; y: number }> | any;
   intro_seen: boolean;
+  onboarding_completed: boolean;
 };
 
 type Ctx = {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
+  isAdmin: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -27,7 +32,7 @@ type Ctx = {
 };
 
 const AuthCtx = createContext<Ctx>({
-  user: null, session: null, profile: null, loading: true,
+  user: null, session: null, profile: null, isAdmin: false, loading: true,
   signOut: async () => {}, refreshProfile: async () => {}, updateProfile: async () => {},
 });
 
@@ -37,11 +42,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (uid: string) => {
     const { data } = await supabase.from("profiles").select("*").eq("id", uid).maybeSingle();
     setProfile((data as unknown as Profile) ?? null);
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+    setIsAdmin(Array.isArray(roles) && roles.some((r: any) => r.role === "admin"));
   };
 
   useEffect(() => {
@@ -51,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (s?.user) {
         setTimeout(() => { void loadProfile(s.user.id); }, 0);
       } else {
-        setProfile(null);
+        setProfile(null); setIsAdmin(false);
       }
     });
     supabase.auth.getSession().then(({ data: { session: s } }) => {
@@ -63,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value: Ctx = {
-    user, session, profile, loading,
+    user, session, profile, isAdmin, loading,
     signOut: async () => { await supabase.auth.signOut(); },
     refreshProfile: async () => { if (user) await loadProfile(user.id); },
     updateProfile: async (patch) => {
