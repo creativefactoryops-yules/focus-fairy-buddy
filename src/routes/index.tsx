@@ -1148,7 +1148,7 @@ function App() {
     });
   };
 
-  const startFocus  = () => { setElapsed(0); setRunning(true); setPose("work"); showNotif("🧠 Focus started, friend!"); };
+  const startFocus  = () => { setElapsed(0); setRunning(true); setPose("work"); showNotif("🧠 Focus started, friend!"); void track("session_start", { duration }); };
   const pauseFocus  = () => { setRunning(false); setPose("idle"); };
   const resumeFocus = () => { setRunning(true); setPose("work"); };
   const resetFocus  = () => { setRunning(false); setElapsed(0); setPose("idle"); };
