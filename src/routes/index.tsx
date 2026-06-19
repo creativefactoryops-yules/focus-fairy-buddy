@@ -925,7 +925,7 @@ function ContactsModal({ onClose, accent, userId, onCall, onText }: {
 
 /* ============ App ============ */
 function App() {
-  const { user, profile, signOut, updateProfile } = useAuth();
+  const { user, profile, isAdmin, signOut, updateProfile } = useAuth();
   const [mood, setMood] = useState("focus");
   const [pose, setPose] = useState<PoseKey>("idle");
   const [running, setRunning] = useState(false);
