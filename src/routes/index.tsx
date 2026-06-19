@@ -279,6 +279,63 @@ function Character({
           <div style={{ position:"absolute", top:-1, left:-1, width:30, height:6, background:"#8b5cf6", borderRadius:"50%" }} />
         </div>
       )}
+
+      {/* Facial hair (boy) */}
+      {kind === "boy" && facialHair && facialHair !== "none" && (
+        <>
+          {facialHair === "stubble" && (
+            <div style={{ position:"absolute", top:24, left:11, width:28, height:8, background:"radial-gradient(ellipse at center,rgba(0,0,0,0.45),transparent 70%)", borderRadius:"50%", zIndex:5, pointerEvents:"none" }} />
+          )}
+          {facialHair === "mustache" && (
+            <div style={{ position:"absolute", top:23, left:14, width:22, height:4, background:hair, borderRadius:"40% 40% 50% 50%", zIndex:5, pointerEvents:"none", boxShadow:"0 1px 0 rgba(0,0,0,0.3)" }} />
+          )}
+          {facialHair === "goatee" && (
+            <>
+              <div style={{ position:"absolute", top:23, left:18, width:14, height:3, background:hair, borderRadius:"40% 40% 50% 50%", zIndex:5 }} />
+              <div style={{ position:"absolute", top:27, left:20, width:10, height:7, background:hair, borderRadius:"30% 30% 60% 60%", zIndex:5 }} />
+            </>
+          )}
+          {facialHair === "fullbeard" && (
+            <div style={{ position:"absolute", top:21, left:8, width:34, height:14, background:hair, borderRadius:"40% 40% 60% 60%", zIndex:4, pointerEvents:"none", boxShadow:"inset 0 -2px 0 rgba(0,0,0,0.2)" }} />
+          )}
+        </>
+      )}
+
+      {/* Accessory */}
+      {accessory && accessory !== "none" && (
+        <>
+          {accessory === "glasses" && (
+            <>
+              <div style={{ position:"absolute", top:14, left:10, width:11, height:8, border:"1.5px solid #1f2937", borderRadius:"50%", background:"rgba(255,255,255,0.1)", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:14, right:10, width:11, height:8, border:"1.5px solid #1f2937", borderRadius:"50%", background:"rgba(255,255,255,0.1)", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:17, left:20, width:5, height:1.5, background:"#1f2937", zIndex:6, pointerEvents:"none" }} />
+            </>
+          )}
+          {accessory === "headphones" && (
+            <>
+              <div style={{ position:"absolute", top:-1, left:6, right:6, height:8, border:"3px solid #1f2937", borderBottom:"none", borderRadius:"50% 50% 0 0", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:8, left:1, width:8, height:11, background:accent, borderRadius:"40% 40% 50% 50%", border:"1.5px solid #1f2937", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:8, right:1, width:8, height:11, background:accent, borderRadius:"40% 40% 50% 50%", border:"1.5px solid #1f2937", zIndex:6, pointerEvents:"none" }} />
+            </>
+          )}
+          {accessory === "hat" && (
+            <>
+              <div style={{ position:"absolute", top:-6, left:2, width:46, height:6, background:"#1f2937", borderRadius:"4px 4px 1px 1px", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:-14, left:9, width:32, height:10, background:"#1f2937", borderRadius:"50% 50% 6px 6px", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:-6, left:14, width:22, height:2, background: accent, zIndex:7, pointerEvents:"none" }} />
+            </>
+          )}
+          {accessory === "flower" && (
+            <div style={{ position:"absolute", top:2, left:30, fontSize:12, zIndex:6, pointerEvents:"none" }}>🌸</div>
+          )}
+          {accessory === "earrings" && (
+            <>
+              <div style={{ position:"absolute", top:20, left:1, width:3, height:3, borderRadius:"50%", background:"#fbbf24", boxShadow:"0 0 4px #fbbf24", zIndex:6, pointerEvents:"none" }} />
+              <div style={{ position:"absolute", top:20, right:1, width:3, height:3, borderRadius:"50%", background:"#fbbf24", boxShadow:"0 0 4px #fbbf24", zIndex:6, pointerEvents:"none" }} />
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 }
