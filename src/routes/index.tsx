@@ -28,9 +28,12 @@ const MOODS = [
     music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Wallpaper.mp3" },
   { id: "rainbow", label: "Rainbow", bg: "#150818", sky: "#1a0a22", accent: "#c084fc", desc: "Magic time 🦄🌈",
     music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3" },
+  // Zen — flamenco-tinged groove (royalty-free stand-in; swap to your licensed Bailaileilo URL anytime).
+  { id: "zen",     label: "Zen",     bg: "#0a1410", sky: "#06100b", accent: "#86efac", desc: "Gypsy Kings vibe · breathe 🌿🧘",
+    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Spanish%20Summer.mp3" },
 ];
 
-type PoseKey = "idle" | "work" | "dance" | "eat" | "feed" | "perch" | "pet" | "candle" | "phone";
+type PoseKey = "idle" | "work" | "dance" | "eat" | "feed" | "perch" | "pet" | "candle" | "phone" | "sleep" | "stretch";
 
 const MSGS: Record<PoseKey, string[]> = {
   idle:   ["Hey friend! Ready when you are ✨","I'm right here with you 💜","Take your time — I'm not going anywhere 🌸"],
@@ -42,6 +45,8 @@ const MSGS: Record<PoseKey, string[]> = {
   pet:    ["Pets pets pets 💜","Mochi is purring so loud 🐱✨","Soft kitty, warm kitty 🌸"],
   candle: ["Candle lit — cozy mode on 🕯️","Tiny ritual, big calm ✨","Soft glow, soft brain 💛"],
   phone:  ["Calling a friend — connection time 📞","You're not alone, friend 💜","Hearing a voice helps ☎️"],
+  sleep:  ["Power nap mode 💤","Resting is productive too 🌙","Sweet dreams, friend ✨"],
+  stretch:["Big stretch! Roll those shoulders 🧘","Breathe in… and out 🌿","Your body thanks you 💜"],
 };
 
 const CSS = `
@@ -100,6 +105,12 @@ const CSS = `
 @keyframes unicornFloat { 0%{transform:translate(0,0) rotate(0);opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translate(40px,-80px) rotate(20deg);opacity:0} }
 @keyframes wmDrift    { 0%{background-position:0 0} 100%{background-position:240px -240px} }
 @keyframes tapPulse   { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+@keyframes stretchSway { 0%,100%{transform:translateX(-50%) scaleY(1)} 25%{transform:translateX(-50%) scaleY(1.12) rotate(-3deg)} 75%{transform:translateX(-50%) scaleY(1.12) rotate(3deg)} }
+@keyframes stretchArm  { 0%,100%{transform:rotate(-160deg) translateY(-4px)} 50%{transform:rotate(-185deg) translateY(-6px)} }
+@keyframes sleepBob    { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-2px)} }
+@keyframes zzz         { 0%{opacity:0;transform:translate(0,0) scale(0.6)} 25%{opacity:1} 100%{opacity:0;transform:translate(14px,-26px) scale(1.2)} }
+@keyframes zenDance    { 0%,100%{transform:translateX(-50%) rotate(0) translateY(0)} 20%{transform:translateX(calc(-50% - 6px)) rotate(-8deg) translateY(-3px)} 50%{transform:translateX(-50%) rotate(0) translateY(-6px)} 80%{transform:translateX(calc(-50% + 6px)) rotate(8deg) translateY(-3px)} }
+@keyframes balloonRise { 0%{opacity:0;transform:translateY(20px) scale(0.6)} 15%{opacity:1} 100%{opacity:0;transform:translateY(-120px) scale(1)} }
 .bd-app button { font-family:inherit; }
 .bd-app .wm { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.05; mix-blend-mode:overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='80' viewBox='0 0 320 80'><text x='0' y='52' font-family='Georgia,serif' font-style='italic' font-weight='700' font-size='30' fill='white' letter-spacing='2'>bodydoubleCFS bodydoubleCFS</text></svg>");
@@ -121,9 +132,52 @@ const CSS = `
 
 type CharColors = { hair: string; skin: string; outfit?: string | null; fur: string; hairLength?: string };
 
+/* ============ Pinch + tap hook (mobile pinch + desktop ctrl/⌘+wheel) ============ */
+function usePinchTap(scale: number, onScale: (s: number) => void, onTap?: () => void) {
+  const pts = useRef(new Map<number, { x: number; y: number }>());
+  const startDist = useRef(0);
+  const startScale = useRef(scale);
+  const tap = useRef<{ t: number; x: number; y: number } | null>(null);
+  const dist = () => {
+    const a = Array.from(pts.current.values());
+    return a.length < 2 ? 0 : Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+  };
+  return {
+    onPointerDown(e: React.PointerEvent) {
+      e.stopPropagation();
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+      pts.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.current.size === 1) tap.current = { t: Date.now(), x: e.clientX, y: e.clientY };
+      if (pts.current.size === 2) { startDist.current = dist(); startScale.current = scale; tap.current = null; }
+    },
+    onPointerMove(e: React.PointerEvent) {
+      if (!pts.current.has(e.pointerId)) return;
+      pts.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.current.size === 2 && startDist.current) {
+        const next = Math.max(0.4, Math.min(2.2, startScale.current * (dist() / startDist.current)));
+        onScale(next); tap.current = null;
+      } else if (tap.current) {
+        if (Math.hypot(e.clientX - tap.current.x, e.clientY - tap.current.y) > 8) tap.current = null;
+      }
+    },
+    onPointerUp(e: React.PointerEvent) {
+      pts.current.delete(e.pointerId);
+      if (pts.current.size < 2) startDist.current = 0;
+      if (pts.current.size === 0 && tap.current && onTap && Date.now() - tap.current.t < 350) onTap();
+      if (pts.current.size === 0) tap.current = null;
+    },
+    onPointerCancel(e: React.PointerEvent) { pts.current.delete(e.pointerId); },
+    onWheel(e: React.WheelEvent) {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      onScale(Math.max(0.4, Math.min(2.2, scale * (e.deltaY < 0 ? 1.08 : 0.92))));
+    },
+  };
+}
+
 /* ============ Character component (girl + boy) ============ */
 function Character({
-  pose, accent, colors, kind, onTap, tapBurst, facialHair, accessory,
+  pose, accent, colors, kind, onTap, tapBurst, facialHair, accessory, extraScale, onScaleChange,
 }: {
   pose: string; accent: string; colors: CharColors;
   kind: "girl" | "boy";
@@ -131,6 +185,8 @@ function Character({
   tapBurst: number;
   facialHair?: string;
   accessory?: string;
+  extraScale: number;
+  onScaleChange: (s: number) => void;
 }) {
   const { hair, skin } = colors;
   const pants = kind === "boy" ? "#1f2937" : "#374151";
@@ -140,47 +196,60 @@ function Character({
   const isFeeding = pose === "feed",  isWorking = pose === "work";
   const isPetting = pose === "pet",   isCandle  = pose === "candle";
   const isPhone = pose === "phone";
+  const isSleep = pose === "sleep";
+  const isStretch = pose === "stretch";
 
-  // Position the *whole body* per activity. Default: standing on floor in front of desk.
-  // Bottom percentages refer to the stage. Stage is now taller (padding 78%).
   let leftPct = "50%";
-  let bottomPct = "3%";              // standing on floor
-  if (isWorking)  bottomPct = "10%"; // sit at desk a touch higher so face is visible
+  let bottomPct = "3%";
+  if (isWorking)  bottomPct = "10%";
   if (isEating)   { leftPct = "55%"; bottomPct = "10%"; }
   if (isDancing)  bottomPct = "4%";
-  if (isPetting)  { leftPct = "25%"; bottomPct = "3%"; }   // walks to Mochi
+  if (isPetting)  { leftPct = "25%"; bottomPct = "3%"; }
   if (isFeeding)  { leftPct = "30%"; bottomPct = "3%"; }
   if (isPhone)    { leftPct = "78%"; bottomPct = "3%"; }
   if (pose === "candle") { leftPct = "44%"; bottomPct = "3%"; }
+  if (isSleep)   { leftPct = "82%"; bottomPct = "8%"; }    // tucked in bed nook
+  if (isStretch) { leftPct = "38%"; bottomPct = "3%"; }    // on yoga mat
 
-  // Pose toggles: idle sway when not active
   const idleSway = (pose === "idle" || pose === "perch");
 
   const ponyH = hairLen === "short" ? 8 : hairLen === "medium" ? 16 : 24;
   const ponyTop = hairLen === "short" ? 4 : 5;
 
-  // Note: container has explicit height so transformOrigin works correctly.
   const W = 50, H = 94;
+  const handlers = usePinchTap(extraScale, onScaleChange, onTap);
 
   return (
     <div
-      onPointerDown={(e) => { e.stopPropagation(); onTap(); }}
+      {...handlers}
       style={{
         position:"absolute",
         bottom: bottomPct, left: leftPct, width: W, height: H,
-        marginLeft: -W/2,            // center on the leftPct anchor
+        marginLeft: -W/2,
         zIndex: 7,
         cursor: "pointer",
-        touchAction: "manipulation",
+        touchAction: "none",
         transition: "bottom 0.6s cubic-bezier(0.34,1.56,0.64,1), left 0.6s ease",
-        animation: isDancing
+        transform: `scale(${extraScale})`,
+        transformOrigin: "bottom center",
+      }}
+    >
+      {/* inner wrapper holds the sway / dance / sleep animation so scale on the outer stays applied */}
+      <div style={{
+        position:"absolute", inset:0, transformOrigin:"bottom center",
+        animation: isStretch
+          ? "stretchSway 2.2s ease-in-out infinite"
+          : isSleep
+          ? "sleepBob 3.2s ease-in-out infinite"
+          : isDancing
           ? "girlSway 0.55s ease-in-out infinite"
           : idleSway
           ? "girlIdleSway 3.2s ease-in-out infinite"
           : "none",
-        transformOrigin: "bottom center",
-      }}
-    >
+      }}>
+      {isSleep && ["z","Z","z"].map((c, i) => (
+        <div key={"zz"+i} style={{ position:"absolute", top:-2, right:-6, fontSize:11, fontWeight:800, color:"#cbd5e1", opacity:0, animation:`zzz 2.4s ease-out ${i*0.6}s infinite` }}>{c}</div>
+      ))}
       <div key={"tap"+tapBurst} style={{ position:"absolute", top:-4, left:0, right:0, height:0, pointerEvents:"none", zIndex:20 }}>
         {tapBurst > 0 && ["💜","✨","💕"].map((h, i) => (
           <div key={i} style={{ position:"absolute", top:0, left: 8 + i*14, fontSize:14, opacity:0, ["--dx" as any]: ((i%2?1:-1)*(4+i*3))+"px", animation:"heartFloat 1.2s ease-out "+(i*0.08)+"s forwards" }}>{h}</div>
@@ -336,29 +405,39 @@ function Character({
           )}
         </>
       )}
+      </div>
     </div>
   );
 }
 
 /* ============ Cat ============ */
-function Cat({ pose, accent, colors, onTap, tapBurst }: { pose: string; accent: string; colors: CharColors; onTap: () => void; tapBurst: number }) {
+function Cat({ pose, accent, colors, onTap, tapBurst, extraScale, onScaleChange }: {
+  pose: string; accent: string; colors: CharColors; onTap: () => void; tapBurst: number;
+  extraScale: number; onScaleChange: (s: number) => void;
+}) {
   const fur = colors.fur, dark = "#000";
   const isDancing = pose === "dance", isFeeding = pose === "feed";
   const isPerch = pose === "perch", isPet = pose === "pet";
+  const isSleep = pose === "sleep";
   const posStyle: React.CSSProperties = isPerch
-    ? { top:"calc(5% + 46px)", left:"50%", bottom:"auto", transform:"translateX(-50%)" }
+    ? { top:"calc(5% + 46px)", left:"50%", bottom:"auto", transform:`scale(${extraScale}) translateX(-50%)` }
     : isPet
-    ? { bottom:"3%", left:"20%" }
-    : { bottom: isDancing || isFeeding ? "4%" : "3%", left:"15%" };
-  const anim = isDancing ? "catDance 0.8s ease-in-out infinite"
+    ? { bottom:"3%", left:"20%", transform:`scale(${extraScale})` }
+    : isSleep
+    ? { bottom:"4%", left:"72%", transform:`scale(${extraScale})` }   // curled up near bed
+    : { bottom: isDancing || isFeeding ? "4%" : "3%", left:"15%", transform:`scale(${extraScale})` };
+  const anim = isSleep ? "sleepBob 3.4s ease-in-out infinite"
+    : isDancing ? "catDance 0.8s ease-in-out infinite"
     : isFeeding ? "catEatBob 0.9s ease-in-out infinite"
     : isPerch ? "perchBreathe 1.8s ease-in-out infinite"
     : isPet ? "purrPaw 0.32s ease-in-out infinite"
     : "catwalk 8s ease-in-out 1s infinite";
+  const handlers = usePinchTap(extraScale, onScaleChange, onTap);
   return (
     <div
-      onPointerDown={(e) => { e.stopPropagation(); onTap(); }}
-      style={{ position:"absolute", width:34, height:32, zIndex:8, cursor:"pointer", touchAction:"manipulation", transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", animation: anim, transformOrigin: isPerch ? "bottom center" : undefined, ...posStyle }}>
+      {...handlers}
+      style={{ position:"absolute", width:34, height:32, zIndex:8, cursor:"pointer", touchAction:"none", transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", transformOrigin: "bottom center", ...posStyle }}>
+      <div style={{ position:"absolute", inset:0, transformOrigin:"bottom center", animation: anim }}>
       <div key={"ct"+tapBurst} style={{ position:"absolute", top:-6, left:0, right:0, height:0, zIndex:25, pointerEvents:"none" }}>
         {tapBurst > 0 && ["💜","🐾","✨"].map((h, i) => (
           <div key={i} style={{ position:"absolute", left:6+i*10, fontSize:12, opacity:0, ["--dx" as any]: ((i%2?1:-1)*4)+"px", animation:"heartFloat 1.2s ease-out "+(i*0.08)+"s forwards" }}>{h}</div>
@@ -377,6 +456,7 @@ function Cat({ pose, accent, colors, onTap, tapBurst }: { pose: string; accent: 
       <div style={{ position:"absolute", top:14, right:-10, width:11, height:7, borderTop:"3px solid " + fur, borderRight:"3px solid " + fur, borderRadius:"0 50% 50% 0", transformOrigin:"left center", animation: isDancing || isPet || isPerch ? "tailFast 0.3s ease-in-out infinite" : "tailWag 2s ease-in-out infinite" }} />
       <div style={{ position:"absolute", bottom:0, left:4, width:8, height:5, background:fur, borderRadius:"50% 50% 40% 40%" }} />
       <div style={{ position:"absolute", bottom:0, right:4, width:8, height:5, background:fur, borderRadius:"50% 50% 40% 40%" }} />
+      </div>
     </div>
   );
 }
@@ -572,6 +652,51 @@ function Room({
         {/* warm glow on the floor */}
         <div style={{ position:"absolute", bottom:-6, left:-8, right:-8, height:8, background:"radial-gradient(ellipse at center,rgba(251,146,60,0.55),transparent 70%)", pointerEvents:"none" }} />
       </Draggable>
+
+      {/* Bed nook — draggable cozy corner */}
+      <Draggable id="bednook" offset={off("bednook")} onMove={onMove} zIndex={3}
+        style={{ position:"absolute", bottom:"22%", right:"2%", width:68, height:34 }}>
+        {/* canopy / nook */}
+        <div style={{ position:"absolute", top:0, left:0, right:0, height:10, background:"linear-gradient(180deg,#4c1d95,#2e1065)", borderRadius:"14px 14px 4px 4px", boxShadow:"0 2px 6px rgba(0,0,0,0.5)" }} />
+        {/* mattress */}
+        <div style={{ position:"absolute", top:10, left:2, right:2, bottom:6, background:"linear-gradient(180deg,#f5e6c8,#d9c08a)", border:"1.5px solid #3b2a1a", borderRadius:"4px 4px 6px 6px", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.4)" }} />
+        {/* blanket */}
+        <div style={{ position:"absolute", bottom:6, left:4, right:4, height:10, background:"linear-gradient(135deg," + accent + "cc," + accent + "88)", borderRadius:"2px 2px 4px 4px", border:"1px solid rgba(0,0,0,0.3)" }} />
+        {/* pillow */}
+        <div style={{ position:"absolute", top:13, left:5, width:18, height:8, background:"#fff", borderRadius:"40% 40% 30% 30%", border:"1px solid #cbd5e1", boxShadow:"0 1px 2px rgba(0,0,0,0.3)" }} />
+        {/* bed legs */}
+        <div style={{ position:"absolute", bottom:0, left:4, width:4, height:6, background:"#3b2a1a", borderRadius:"0 0 2px 2px" }} />
+        <div style={{ position:"absolute", bottom:0, right:4, width:4, height:6, background:"#3b2a1a", borderRadius:"0 0 2px 2px" }} />
+      </Draggable>
+
+      {/* Big bookshelf — draggable */}
+      <Draggable id="bigshelf" offset={off("bigshelf")} onMove={onMove} zIndex={2}
+        style={{ position:"absolute", bottom:"22%", left:"2%", width:32, height:60 }}>
+        <div style={{ position:"absolute", inset:0, background:"#3b2a1a", borderRadius:3, border:"1.5px solid #2a1208", boxShadow:"0 3px 8px rgba(0,0,0,0.45)" }} />
+        {[0,1,2,3].map((row) => (
+          <React.Fragment key={row}>
+            <div style={{ position:"absolute", left:2, right:2, top: 4 + row*14, height:11, background:"#2a1810", borderRadius:1, overflow:"hidden" }}>
+              {["#dc2626","#2563eb","#059669","#d97706","#7c3aed","#ec4899","#f59e0b"].slice(0, 4 + (row%2)).map((c, i) => (
+                <div key={i} style={{ position:"absolute", bottom:1, left: 1 + i*5.5, width:4 + (i%3), height: 8 + ((i+row)%3), background:c, borderRadius:"1px 1px 0 0", border:"0.5px solid rgba(0,0,0,0.4)" }} />
+              ))}
+            </div>
+            <div style={{ position:"absolute", left:0, right:0, top: 15 + row*14, height:1.5, background:"#1a0d06" }} />
+          </React.Fragment>
+        ))}
+        {/* plant on top */}
+        <div style={{ position:"absolute", top:-6, right:4, width:8, height:8, background:"#15803d", borderRadius:"50% 50% 30% 30%" }} />
+      </Draggable>
+
+      {/* Yoga / meditation mat — draggable */}
+      <Draggable id="yogamat" offset={off("yogamat")} onMove={onMove} zIndex={3}
+        style={{ position:"absolute", bottom:"19.5%", left:"34%", width:54, height:8 }}>
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(135deg,#86efac,#22c55e 60%,#15803d)", borderRadius:6, border:"1px solid #14532d", boxShadow:"0 2px 4px rgba(0,0,0,0.4)" }} />
+        {/* rolled-up end */}
+        <div style={{ position:"absolute", top:-1, right:-2, width:8, height:10, background:"#22c55e", borderRadius:"50%", border:"1px solid #14532d" }} />
+        {/* lotus marker */}
+        <div style={{ position:"absolute", top:1.5, left:"50%", marginLeft:-4, fontSize:6, color:"#fff", opacity:0.85 }}>🪷</div>
+      </Draggable>
+
 
       {/* floor + desk (fixed) */}
       <div style={{ position:"absolute", bottom:0, left:0, right:0, height:"22%", background:"#1c1208" }} />
@@ -1004,7 +1129,44 @@ function App() {
     setLayout({});
     if (typeof window !== "undefined") localStorage.setItem("bd-layout", "{}");
     if (user) void updateProfile({ room_layout: {} } as any);
+    setCharScale(0.72); setCatScale(0.72);
+    if (typeof window !== "undefined") { localStorage.setItem("bd-char-scale", "0.72"); localStorage.setItem("bd-cat-scale", "0.72"); }
   };
+
+  // Per-character pinch scale (mobile pinch + desktop ⌘/Ctrl + wheel). Saved locally; signed-in users get
+  // it persisted as room_layout._scale_char / _scale_cat alongside drag offsets.
+  const [charScale, setCharScale] = useState<number>(() => {
+    if (typeof window === "undefined") return 0.72;
+    const v = parseFloat(localStorage.getItem("bd-char-scale") || "0.72");
+    return isFinite(v) ? v : 0.72;
+  });
+  const [catScale, setCatScale] = useState<number>(() => {
+    if (typeof window === "undefined") return 0.72;
+    const v = parseFloat(localStorage.getItem("bd-cat-scale") || "0.72");
+    return isFinite(v) ? v : 0.72;
+  });
+  useEffect(() => {
+    const rl: any = profile?.room_layout;
+    if (rl && typeof rl === "object") {
+      if (typeof rl._scale_char === "number") setCharScale(rl._scale_char);
+      if (typeof rl._scale_cat === "number")  setCatScale(rl._scale_cat);
+    }
+  }, [profile?.room_layout]);
+  const scaleSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const persistScales = (nextChar: number, nextCat: number) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bd-char-scale", String(nextChar));
+      localStorage.setItem("bd-cat-scale", String(nextCat));
+    }
+    if (user) {
+      if (scaleSaveTimer.current) clearTimeout(scaleSaveTimer.current);
+      scaleSaveTimer.current = setTimeout(() => {
+        void updateProfile({ room_layout: { ...layout, _scale_char: nextChar, _scale_cat: nextCat } } as any);
+      }, 600);
+    }
+  };
+  const onCharScale = (s: number) => { setCharScale(s); persistScales(s, catScale); };
+  const onCatScale  = (s: number) => { setCatScale(s);  persistScales(charScale, s); };
 
   const [todos, setTodos] = useState<{ id: number; text: string; done: boolean }[]>(() => {
     if (typeof window === "undefined") return [];
@@ -1160,6 +1322,8 @@ function App() {
   const doPerch = () => triggerPose("perch", 22, "🌤️ Mochi's on the window perch");
   const doPet   = () => triggerPose("pet", 14, "💜 Petting Mochi — purr engaged");
   const doCandle = () => { setCandleLit((v) => !v); triggerPose("candle", 8, candleLit ? "🌙 Candle out" : "🕯️ Candle lit — cozy ritual"); };
+  const doSleep   = () => triggerPose("sleep", 30, "💤 Power nap — Mochi curls up too");
+  const doStretch = () => triggerPose("stretch", 18, "🧘 Big stretch — breathe with me");
   const doPhone  = async () => {
     stopRinging();
     setDialing(true);
@@ -1222,13 +1386,13 @@ function App() {
               <div className="bd-stage">
                 <div style={{ position:"absolute", inset:0 }}>
                   <Room mood={mood} pose={pose} accent={accent} candleLit={candleLit} layout={layout} onMove={onMoveItem} dialing={dialing} />
-                  {/* Scale wrapper — makes friend + Mochi smaller so the room has more breathing room for new items */}
-                  <div style={{ position:"absolute", inset:0, transform:"scale(0.72)", transformOrigin:"50% 100%", pointerEvents:"none" }}>
-                    <div style={{ position:"absolute", inset:0, pointerEvents:"auto" }}>
-                      <Character pose={pose} accent={accent} colors={colors} kind={kind} onTap={onTapGirl} tapBurst={tapGirl} facialHair={profile?.facial_hair || "none"} accessory={profile?.accessory || "none"} />
-                      <Cat pose={pose} accent={accent} colors={colors} onTap={onTapCat} tapBurst={tapCat} />
-                    </div>
-                  </div>
+                  {/* Per-character pinch scale (mobile pinch / ⌘/Ctrl + wheel). Helps OCD / spectrum friendly fine-tuning. */}
+                  <Character pose={pose} accent={accent} colors={colors} kind={kind} onTap={onTapGirl} tapBurst={tapGirl} facialHair={profile?.facial_hair || "none"} accessory={profile?.accessory || "none"} extraScale={charScale} onScaleChange={onCharScale} />
+                  <Cat pose={pose} accent={accent} colors={colors} onTap={onTapCat} tapBurst={tapCat} extraScale={catScale} onScaleChange={onCatScale} />
+                  {/* Happy-face pixel balloons during dance breaks */}
+                  {pose === "dance" && Array.from({ length: 7 }, (_, i) => (
+                    <div key={"bln"+i} style={{ position:"absolute", bottom:"18%", left:(12 + i*11) + "%", fontSize: 16 + (i%3)*4, pointerEvents:"none", opacity:0, animation:`balloonRise ${2.6 + (i%4)*0.35}s ease-out ${i*0.22}s infinite`, zIndex:9 }}>😊</div>
+                  ))}
                   <Confetti active={pose === "dance"} accent={accent} />
                   {notif.text && <Notif text={notif.text} accent={accent} id={notif.id} />}
                 </div>
@@ -1237,7 +1401,7 @@ function App() {
                 {curMsg}
               </div>
               <div style={{ textAlign:"center", fontSize:9.5, color:"rgba(255,255,255,0.32)", padding:"4px 0 8px", letterSpacing:0.5 }}>
-                ✋ Tap your friend or Mochi · Drag any item to rearrange
+                ✋ Tap · Drag items · Pinch friend / Mochi to resize · ⌘/Ctrl + wheel on desktop
               </div>
             </div>
 
@@ -1284,6 +1448,8 @@ function App() {
                     { label: "🌤️ Window perch", fn: doPerch },
                     { label: candleLit ? "🕯️ Candle ✓" : "🕯️ Light candle", fn: doCandle },
                     { label: "📞 Call a friend", fn: () => setContactsOpen(true) },
+                    { label: "☆ Take a nap", fn: doSleep },
+                    { label: "🧘 Stretch", fn: doStretch },
                   ].map((btn) => (
                     <button key={btn.label} onClick={btn.fn}
                       style={{ padding:"9px 4px", borderRadius:11, border:"1px solid rgba(255,255,255,0.09)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.7)", fontSize:10.5, fontWeight:600, cursor:"pointer", lineHeight:1.3, transition:"all 0.2s ease" }}>
