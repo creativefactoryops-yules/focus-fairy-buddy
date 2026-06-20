@@ -18,10 +18,13 @@ function AdminPage() {
   const [busy, setBusy] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
+  const ownerEmail = "creativefactory.ops@gmail.com";
+  const isOwner = (user?.email || "").trim().toLowerCase() === ownerEmail;
+
   useEffect(() => {
     if (loading) return;
     if (!user) { navigate({ to: "/login" }); return; }
-    if (!isAdmin) return;
+    if (!isAdmin || !isOwner) return;
     (async () => {
       setBusy(true);
       try {
@@ -35,7 +38,7 @@ function AdminPage() {
       } catch (e: any) { setErr(e.message || "Failed to load"); }
       setBusy(false);
     })();
-  }, [user, isAdmin, loading, navigate]);
+  }, [user, isAdmin, isOwner, loading, navigate]);
 
   if (loading) return <Shell><p style={muted}>Loading…</p></Shell>;
   if (!user) return null;
