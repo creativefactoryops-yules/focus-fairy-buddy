@@ -45,11 +45,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const loadProfile = async (uid: string) => {
+  const loadProfile = async (uid: string, email?: string | null) => {
     const { data } = await supabase.from("profiles").select("*").eq("id", uid).maybeSingle();
     setProfile((data as unknown as Profile) ?? null);
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-    setIsAdmin(Array.isArray(roles) && roles.some((r: any) => r.role === "admin"));
+    // Client-side defense in depth: only the single owner email may see admin UI,
+    // even if extra rows ever land in user_roles. DB trigger also enforces this server-side.
+    const ownerEmail = "creativefactory.ops@gmail.com";
+    const isOwner = (email || "").trim().toLowerCase() === ownerEmail;
+    setIsAdmin(isOwner && Array.isArray(roles) && roles.some((r: any) => r.role === "admin"));
   };
 
   useEffect(() => {
