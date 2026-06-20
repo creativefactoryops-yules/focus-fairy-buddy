@@ -132,9 +132,52 @@ const CSS = `
 
 type CharColors = { hair: string; skin: string; outfit?: string | null; fur: string; hairLength?: string };
 
+/* ============ Pinch + tap hook (mobile pinch + desktop ctrl/⌘+wheel) ============ */
+function usePinchTap(scale: number, onScale: (s: number) => void, onTap?: () => void) {
+  const pts = useRef(new Map<number, { x: number; y: number }>());
+  const startDist = useRef(0);
+  const startScale = useRef(scale);
+  const tap = useRef<{ t: number; x: number; y: number } | null>(null);
+  const dist = () => {
+    const a = Array.from(pts.current.values());
+    return a.length < 2 ? 0 : Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+  };
+  return {
+    onPointerDown(e: React.PointerEvent) {
+      e.stopPropagation();
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+      pts.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.current.size === 1) tap.current = { t: Date.now(), x: e.clientX, y: e.clientY };
+      if (pts.current.size === 2) { startDist.current = dist(); startScale.current = scale; tap.current = null; }
+    },
+    onPointerMove(e: React.PointerEvent) {
+      if (!pts.current.has(e.pointerId)) return;
+      pts.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.current.size === 2 && startDist.current) {
+        const next = Math.max(0.4, Math.min(2.2, startScale.current * (dist() / startDist.current)));
+        onScale(next); tap.current = null;
+      } else if (tap.current) {
+        if (Math.hypot(e.clientX - tap.current.x, e.clientY - tap.current.y) > 8) tap.current = null;
+      }
+    },
+    onPointerUp(e: React.PointerEvent) {
+      pts.current.delete(e.pointerId);
+      if (pts.current.size < 2) startDist.current = 0;
+      if (pts.current.size === 0 && tap.current && onTap && Date.now() - tap.current.t < 350) onTap();
+      if (pts.current.size === 0) tap.current = null;
+    },
+    onPointerCancel(e: React.PointerEvent) { pts.current.delete(e.pointerId); },
+    onWheel(e: React.WheelEvent) {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      onScale(Math.max(0.4, Math.min(2.2, scale * (e.deltaY < 0 ? 1.08 : 0.92))));
+    },
+  };
+}
+
 /* ============ Character component (girl + boy) ============ */
 function Character({
-  pose, accent, colors, kind, onTap, tapBurst, facialHair, accessory,
+  pose, accent, colors, kind, onTap, tapBurst, facialHair, accessory, extraScale, onScaleChange,
 }: {
   pose: string; accent: string; colors: CharColors;
   kind: "girl" | "boy";
@@ -142,6 +185,8 @@ function Character({
   tapBurst: number;
   facialHair?: string;
   accessory?: string;
+  extraScale: number;
+  onScaleChange: (s: number) => void;
 }) {
   const { hair, skin } = colors;
   const pants = kind === "boy" ? "#1f2937" : "#374151";
@@ -151,47 +196,56 @@ function Character({
   const isFeeding = pose === "feed",  isWorking = pose === "work";
   const isPetting = pose === "pet",   isCandle  = pose === "candle";
   const isPhone = pose === "phone";
+  const isSleep = pose === "sleep";
+  const isStretch = pose === "stretch";
 
-  // Position the *whole body* per activity. Default: standing on floor in front of desk.
-  // Bottom percentages refer to the stage. Stage is now taller (padding 78%).
   let leftPct = "50%";
-  let bottomPct = "3%";              // standing on floor
-  if (isWorking)  bottomPct = "10%"; // sit at desk a touch higher so face is visible
+  let bottomPct = "3%";
+  if (isWorking)  bottomPct = "10%";
   if (isEating)   { leftPct = "55%"; bottomPct = "10%"; }
   if (isDancing)  bottomPct = "4%";
-  if (isPetting)  { leftPct = "25%"; bottomPct = "3%"; }   // walks to Mochi
+  if (isPetting)  { leftPct = "25%"; bottomPct = "3%"; }
   if (isFeeding)  { leftPct = "30%"; bottomPct = "3%"; }
   if (isPhone)    { leftPct = "78%"; bottomPct = "3%"; }
   if (pose === "candle") { leftPct = "44%"; bottomPct = "3%"; }
+  if (isSleep)   { leftPct = "82%"; bottomPct = "8%"; }    // tucked in bed nook
+  if (isStretch) { leftPct = "38%"; bottomPct = "3%"; }    // on yoga mat
 
-  // Pose toggles: idle sway when not active
   const idleSway = (pose === "idle" || pose === "perch");
 
   const ponyH = hairLen === "short" ? 8 : hairLen === "medium" ? 16 : 24;
   const ponyTop = hairLen === "short" ? 4 : 5;
 
-  // Note: container has explicit height so transformOrigin works correctly.
   const W = 50, H = 94;
+  const handlers = usePinchTap(extraScale, onScaleChange, onTap);
 
   return (
     <div
-      onPointerDown={(e) => { e.stopPropagation(); onTap(); }}
+      {...handlers}
       style={{
         position:"absolute",
         bottom: bottomPct, left: leftPct, width: W, height: H,
-        marginLeft: -W/2,            // center on the leftPct anchor
+        marginLeft: -W/2,
         zIndex: 7,
         cursor: "pointer",
-        touchAction: "manipulation",
+        touchAction: "none",
         transition: "bottom 0.6s cubic-bezier(0.34,1.56,0.64,1), left 0.6s ease",
-        animation: isDancing
+        transform: `scale(${extraScale})`,
+        transformOrigin: "bottom center",
+        animation: isStretch
+          ? "stretchSway 2.2s ease-in-out infinite"
+          : isSleep
+          ? "sleepBob 3.2s ease-in-out infinite"
+          : isDancing && pose === "dance"
           ? "girlSway 0.55s ease-in-out infinite"
           : idleSway
           ? "girlIdleSway 3.2s ease-in-out infinite"
           : "none",
-        transformOrigin: "bottom center",
       }}
     >
+      {isSleep && ["z","Z","z"].map((c, i) => (
+        <div key={"zz"+i} style={{ position:"absolute", top:-2, right:-6, fontSize:11, fontWeight:800, color:"#cbd5e1", opacity:0, animation:`zzz 2.4s ease-out ${i*0.6}s infinite` }}>{c}</div>
+      ))}
       <div key={"tap"+tapBurst} style={{ position:"absolute", top:-4, left:0, right:0, height:0, pointerEvents:"none", zIndex:20 }}>
         {tapBurst > 0 && ["💜","✨","💕"].map((h, i) => (
           <div key={i} style={{ position:"absolute", top:0, left: 8 + i*14, fontSize:14, opacity:0, ["--dx" as any]: ((i%2?1:-1)*(4+i*3))+"px", animation:"heartFloat 1.2s ease-out "+(i*0.08)+"s forwards" }}>{h}</div>
