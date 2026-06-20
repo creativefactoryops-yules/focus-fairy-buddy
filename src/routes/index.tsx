@@ -1396,6 +1396,8 @@ function App() {
                     { label: "🌤️ Window perch", fn: doPerch },
                     { label: candleLit ? "🕯️ Candle ✓" : "🕯️ Light candle", fn: doCandle },
                     { label: "📞 Call a friend", fn: () => setContactsOpen(true) },
+                    { label: "☆ Take a nap", fn: doSleep },
+                    { label: "🧘 Stretch", fn: doStretch },
                   ].map((btn) => (
                     <button key={btn.label} onClick={btn.fn}
                       style={{ padding:"9px 4px", borderRadius:11, border:"1px solid rgba(255,255,255,0.09)", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.7)", fontSize:10.5, fontWeight:600, cursor:"pointer", lineHeight:1.3, transition:"all 0.2s ease" }}>
