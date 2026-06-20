@@ -1077,7 +1077,44 @@ function App() {
     setLayout({});
     if (typeof window !== "undefined") localStorage.setItem("bd-layout", "{}");
     if (user) void updateProfile({ room_layout: {} } as any);
+    setCharScale(0.72); setCatScale(0.72);
+    if (typeof window !== "undefined") { localStorage.setItem("bd-char-scale", "0.72"); localStorage.setItem("bd-cat-scale", "0.72"); }
   };
+
+  // Per-character pinch scale (mobile pinch + desktop ⌘/Ctrl + wheel). Saved locally; signed-in users get
+  // it persisted as room_layout._scale_char / _scale_cat alongside drag offsets.
+  const [charScale, setCharScale] = useState<number>(() => {
+    if (typeof window === "undefined") return 0.72;
+    const v = parseFloat(localStorage.getItem("bd-char-scale") || "0.72");
+    return isFinite(v) ? v : 0.72;
+  });
+  const [catScale, setCatScale] = useState<number>(() => {
+    if (typeof window === "undefined") return 0.72;
+    const v = parseFloat(localStorage.getItem("bd-cat-scale") || "0.72");
+    return isFinite(v) ? v : 0.72;
+  });
+  useEffect(() => {
+    const rl: any = profile?.room_layout;
+    if (rl && typeof rl === "object") {
+      if (typeof rl._scale_char === "number") setCharScale(rl._scale_char);
+      if (typeof rl._scale_cat === "number")  setCatScale(rl._scale_cat);
+    }
+  }, [profile?.room_layout]);
+  const scaleSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const persistScales = (nextChar: number, nextCat: number) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bd-char-scale", String(nextChar));
+      localStorage.setItem("bd-cat-scale", String(nextCat));
+    }
+    if (user) {
+      if (scaleSaveTimer.current) clearTimeout(scaleSaveTimer.current);
+      scaleSaveTimer.current = setTimeout(() => {
+        void updateProfile({ room_layout: { ...layout, _scale_char: nextChar, _scale_cat: nextCat } } as any);
+      }, 600);
+    }
+  };
+  const onCharScale = (s: number) => { setCharScale(s); persistScales(s, catScale); };
+  const onCatScale  = (s: number) => { setCatScale(s);  persistScales(charScale, s); };
 
   const [todos, setTodos] = useState<{ id: number; text: string; done: boolean }[]>(() => {
     if (typeof window === "undefined") return [];
