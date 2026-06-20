@@ -232,17 +232,21 @@ function Character({
         transition: "bottom 0.6s cubic-bezier(0.34,1.56,0.64,1), left 0.6s ease",
         transform: `scale(${extraScale})`,
         transformOrigin: "bottom center",
+      }}
+    >
+      {/* inner wrapper holds the sway / dance / sleep animation so scale on the outer stays applied */}
+      <div style={{
+        position:"absolute", inset:0, transformOrigin:"bottom center",
         animation: isStretch
           ? "stretchSway 2.2s ease-in-out infinite"
           : isSleep
           ? "sleepBob 3.2s ease-in-out infinite"
-          : isDancing && pose === "dance"
+          : isDancing
           ? "girlSway 0.55s ease-in-out infinite"
           : idleSway
           ? "girlIdleSway 3.2s ease-in-out infinite"
           : "none",
-      }}
-    >
+      }}>
       {isSleep && ["z","Z","z"].map((c, i) => (
         <div key={"zz"+i} style={{ position:"absolute", top:-2, right:-6, fontSize:11, fontWeight:800, color:"#cbd5e1", opacity:0, animation:`zzz 2.4s ease-out ${i*0.6}s infinite` }}>{c}</div>
       ))}
