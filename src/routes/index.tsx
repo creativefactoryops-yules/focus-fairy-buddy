@@ -406,24 +406,32 @@ function Character({
 }
 
 /* ============ Cat ============ */
-function Cat({ pose, accent, colors, onTap, tapBurst }: { pose: string; accent: string; colors: CharColors; onTap: () => void; tapBurst: number }) {
+function Cat({ pose, accent, colors, onTap, tapBurst, extraScale, onScaleChange }: {
+  pose: string; accent: string; colors: CharColors; onTap: () => void; tapBurst: number;
+  extraScale: number; onScaleChange: (s: number) => void;
+}) {
   const fur = colors.fur, dark = "#000";
   const isDancing = pose === "dance", isFeeding = pose === "feed";
   const isPerch = pose === "perch", isPet = pose === "pet";
+  const isSleep = pose === "sleep";
   const posStyle: React.CSSProperties = isPerch
-    ? { top:"calc(5% + 46px)", left:"50%", bottom:"auto", transform:"translateX(-50%)" }
+    ? { top:"calc(5% + 46px)", left:"50%", bottom:"auto", transform:`scale(${extraScale}) translateX(-50%)` }
     : isPet
-    ? { bottom:"3%", left:"20%" }
-    : { bottom: isDancing || isFeeding ? "4%" : "3%", left:"15%" };
-  const anim = isDancing ? "catDance 0.8s ease-in-out infinite"
+    ? { bottom:"3%", left:"20%", transform:`scale(${extraScale})` }
+    : isSleep
+    ? { bottom:"4%", left:"72%", transform:`scale(${extraScale})` }   // curled up near bed
+    : { bottom: isDancing || isFeeding ? "4%" : "3%", left:"15%", transform:`scale(${extraScale})` };
+  const anim = isSleep ? "sleepBob 3.4s ease-in-out infinite"
+    : isDancing ? "catDance 0.8s ease-in-out infinite"
     : isFeeding ? "catEatBob 0.9s ease-in-out infinite"
     : isPerch ? "perchBreathe 1.8s ease-in-out infinite"
     : isPet ? "purrPaw 0.32s ease-in-out infinite"
     : "catwalk 8s ease-in-out 1s infinite";
+  const handlers = usePinchTap(extraScale, onScaleChange, onTap);
   return (
     <div
-      onPointerDown={(e) => { e.stopPropagation(); onTap(); }}
-      style={{ position:"absolute", width:34, height:32, zIndex:8, cursor:"pointer", touchAction:"manipulation", transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", animation: anim, transformOrigin: isPerch ? "bottom center" : undefined, ...posStyle }}>
+      {...handlers}
+      style={{ position:"absolute", width:34, height:32, zIndex:8, cursor:"pointer", touchAction:"none", transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", animation: anim, transformOrigin: isPerch ? "bottom center" : "bottom center", ...posStyle }}>
       <div key={"ct"+tapBurst} style={{ position:"absolute", top:-6, left:0, right:0, height:0, zIndex:25, pointerEvents:"none" }}>
         {tapBurst > 0 && ["💜","🐾","✨"].map((h, i) => (
           <div key={i} style={{ position:"absolute", left:6+i*10, fontSize:12, opacity:0, ["--dx" as any]: ((i%2?1:-1)*4)+"px", animation:"heartFloat 1.2s ease-out "+(i*0.08)+"s forwards" }}>{h}</div>
