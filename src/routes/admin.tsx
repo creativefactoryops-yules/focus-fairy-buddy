@@ -42,7 +42,7 @@ function AdminPage() {
 
   if (loading) return <Shell><p style={muted}>Loading…</p></Shell>;
   if (!user) return null;
-  if (!isAdmin) return (
+  if (!isAdmin || !isOwner) return (
     <Shell>
       <h1 style={h1}>Admin only</h1>
       <p style={muted}>You don't have admin access. If this is your account, ask the project owner to grant the admin role.</p>
