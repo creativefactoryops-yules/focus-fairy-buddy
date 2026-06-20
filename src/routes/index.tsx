@@ -105,6 +105,12 @@ const CSS = `
 @keyframes unicornFloat { 0%{transform:translate(0,0) rotate(0);opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translate(40px,-80px) rotate(20deg);opacity:0} }
 @keyframes wmDrift    { 0%{background-position:0 0} 100%{background-position:240px -240px} }
 @keyframes tapPulse   { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+@keyframes stretchSway { 0%,100%{transform:translateX(-50%) scaleY(1)} 25%{transform:translateX(-50%) scaleY(1.12) rotate(-3deg)} 75%{transform:translateX(-50%) scaleY(1.12) rotate(3deg)} }
+@keyframes stretchArm  { 0%,100%{transform:rotate(-160deg) translateY(-4px)} 50%{transform:rotate(-185deg) translateY(-6px)} }
+@keyframes sleepBob    { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-2px)} }
+@keyframes zzz         { 0%{opacity:0;transform:translate(0,0) scale(0.6)} 25%{opacity:1} 100%{opacity:0;transform:translate(14px,-26px) scale(1.2)} }
+@keyframes zenDance    { 0%,100%{transform:translateX(-50%) rotate(0) translateY(0)} 20%{transform:translateX(calc(-50% - 6px)) rotate(-8deg) translateY(-3px)} 50%{transform:translateX(-50%) rotate(0) translateY(-6px)} 80%{transform:translateX(calc(-50% + 6px)) rotate(8deg) translateY(-3px)} }
+@keyframes balloonRise { 0%{opacity:0;transform:translateY(20px) scale(0.6)} 15%{opacity:1} 100%{opacity:0;transform:translateY(-120px) scale(1)} }
 .bd-app button { font-family:inherit; }
 .bd-app .wm { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.05; mix-blend-mode:overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='80' viewBox='0 0 320 80'><text x='0' y='52' font-family='Georgia,serif' font-style='italic' font-weight='700' font-size='30' fill='white' letter-spacing='2'>bodydoubleCFS bodydoubleCFS</text></svg>");
