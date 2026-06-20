@@ -436,7 +436,8 @@ function Cat({ pose, accent, colors, onTap, tapBurst, extraScale, onScaleChange 
   return (
     <div
       {...handlers}
-      style={{ position:"absolute", width:34, height:32, zIndex:8, cursor:"pointer", touchAction:"none", transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", animation: anim, transformOrigin: isPerch ? "bottom center" : "bottom center", ...posStyle }}>
+      style={{ position:"absolute", width:34, height:32, zIndex:8, cursor:"pointer", touchAction:"none", transition:"bottom 0.5s ease, top 0.5s ease, left 0.5s ease", transformOrigin: "bottom center", ...posStyle }}>
+      <div style={{ position:"absolute", inset:0, transformOrigin:"bottom center", animation: anim }}>
       <div key={"ct"+tapBurst} style={{ position:"absolute", top:-6, left:0, right:0, height:0, zIndex:25, pointerEvents:"none" }}>
         {tapBurst > 0 && ["💜","🐾","✨"].map((h, i) => (
           <div key={i} style={{ position:"absolute", left:6+i*10, fontSize:12, opacity:0, ["--dx" as any]: ((i%2?1:-1)*4)+"px", animation:"heartFloat 1.2s ease-out "+(i*0.08)+"s forwards" }}>{h}</div>
