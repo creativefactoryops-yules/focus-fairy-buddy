@@ -646,6 +646,51 @@ function Room({
         <div style={{ position:"absolute", bottom:-6, left:-8, right:-8, height:8, background:"radial-gradient(ellipse at center,rgba(251,146,60,0.55),transparent 70%)", pointerEvents:"none" }} />
       </Draggable>
 
+      {/* Bed nook — draggable cozy corner */}
+      <Draggable id="bednook" offset={off("bednook")} onMove={onMove} zIndex={3}
+        style={{ position:"absolute", bottom:"22%", right:"2%", width:68, height:34 }}>
+        {/* canopy / nook */}
+        <div style={{ position:"absolute", top:0, left:0, right:0, height:10, background:"linear-gradient(180deg,#4c1d95,#2e1065)", borderRadius:"14px 14px 4px 4px", boxShadow:"0 2px 6px rgba(0,0,0,0.5)" }} />
+        {/* mattress */}
+        <div style={{ position:"absolute", top:10, left:2, right:2, bottom:6, background:"linear-gradient(180deg,#f5e6c8,#d9c08a)", border:"1.5px solid #3b2a1a", borderRadius:"4px 4px 6px 6px", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.4)" }} />
+        {/* blanket */}
+        <div style={{ position:"absolute", bottom:6, left:4, right:4, height:10, background:"linear-gradient(135deg," + accent + "cc," + accent + "88)", borderRadius:"2px 2px 4px 4px", border:"1px solid rgba(0,0,0,0.3)" }} />
+        {/* pillow */}
+        <div style={{ position:"absolute", top:13, left:5, width:18, height:8, background:"#fff", borderRadius:"40% 40% 30% 30%", border:"1px solid #cbd5e1", boxShadow:"0 1px 2px rgba(0,0,0,0.3)" }} />
+        {/* bed legs */}
+        <div style={{ position:"absolute", bottom:0, left:4, width:4, height:6, background:"#3b2a1a", borderRadius:"0 0 2px 2px" }} />
+        <div style={{ position:"absolute", bottom:0, right:4, width:4, height:6, background:"#3b2a1a", borderRadius:"0 0 2px 2px" }} />
+      </Draggable>
+
+      {/* Big bookshelf — draggable */}
+      <Draggable id="bigshelf" offset={off("bigshelf")} onMove={onMove} zIndex={2}
+        style={{ position:"absolute", bottom:"22%", left:"2%", width:32, height:60 }}>
+        <div style={{ position:"absolute", inset:0, background:"#3b2a1a", borderRadius:3, border:"1.5px solid #2a1208", boxShadow:"0 3px 8px rgba(0,0,0,0.45)" }} />
+        {[0,1,2,3].map((row) => (
+          <React.Fragment key={row}>
+            <div style={{ position:"absolute", left:2, right:2, top: 4 + row*14, height:11, background:"#2a1810", borderRadius:1, overflow:"hidden" }}>
+              {["#dc2626","#2563eb","#059669","#d97706","#7c3aed","#ec4899","#f59e0b"].slice(0, 4 + (row%2)).map((c, i) => (
+                <div key={i} style={{ position:"absolute", bottom:1, left: 1 + i*5.5, width:4 + (i%3), height: 8 + ((i+row)%3), background:c, borderRadius:"1px 1px 0 0", border:"0.5px solid rgba(0,0,0,0.4)" }} />
+              ))}
+            </div>
+            <div style={{ position:"absolute", left:0, right:0, top: 15 + row*14, height:1.5, background:"#1a0d06" }} />
+          </React.Fragment>
+        ))}
+        {/* plant on top */}
+        <div style={{ position:"absolute", top:-6, right:4, width:8, height:8, background:"#15803d", borderRadius:"50% 50% 30% 30%" }} />
+      </Draggable>
+
+      {/* Yoga / meditation mat — draggable */}
+      <Draggable id="yogamat" offset={off("yogamat")} onMove={onMove} zIndex={3}
+        style={{ position:"absolute", bottom:"19.5%", left:"34%", width:54, height:8 }}>
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(135deg,#86efac,#22c55e 60%,#15803d)", borderRadius:6, border:"1px solid #14532d", boxShadow:"0 2px 4px rgba(0,0,0,0.4)" }} />
+        {/* rolled-up end */}
+        <div style={{ position:"absolute", top:-1, right:-2, width:8, height:10, background:"#22c55e", borderRadius:"50%", border:"1px solid #14532d" }} />
+        {/* lotus marker */}
+        <div style={{ position:"absolute", top:1.5, left:"50%", marginLeft:-4, fontSize:6, color:"#fff", opacity:0.85 }}>🪷</div>
+      </Draggable>
+
+
       {/* floor + desk (fixed) */}
       <div style={{ position:"absolute", bottom:0, left:0, right:0, height:"22%", background:"#1c1208" }} />
       <div style={{ position:"absolute", bottom:"22%", left:0, right:0, height:2, background:"rgba(0,0,0,0.3)" }} />
