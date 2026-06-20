@@ -1270,6 +1270,8 @@ function App() {
   const doPerch = () => triggerPose("perch", 22, "🌤️ Mochi's on the window perch");
   const doPet   = () => triggerPose("pet", 14, "💜 Petting Mochi — purr engaged");
   const doCandle = () => { setCandleLit((v) => !v); triggerPose("candle", 8, candleLit ? "🌙 Candle out" : "🕯️ Candle lit — cozy ritual"); };
+  const doSleep   = () => triggerPose("sleep", 30, "💤 Power nap — Mochi curls up too");
+  const doStretch = () => triggerPose("stretch", 18, "🧘 Big stretch — breathe with me");
   const doPhone  = async () => {
     stopRinging();
     setDialing(true);
