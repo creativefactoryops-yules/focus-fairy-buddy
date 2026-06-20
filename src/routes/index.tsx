@@ -405,6 +405,7 @@ function Character({
           )}
         </>
       )}
+      </div>
     </div>
   );
 }
