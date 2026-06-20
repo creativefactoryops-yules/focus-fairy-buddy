@@ -28,9 +28,12 @@ const MOODS = [
     music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Wallpaper.mp3" },
   { id: "rainbow", label: "Rainbow", bg: "#150818", sky: "#1a0a22", accent: "#c084fc", desc: "Magic time 🦄🌈",
     music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3" },
+  // Zen — flamenco-tinged groove (royalty-free stand-in; swap to your licensed Bailaileilo URL anytime).
+  { id: "zen",     label: "Zen",     bg: "#0a1410", sky: "#06100b", accent: "#86efac", desc: "Gypsy Kings vibe · breathe 🌿🧘",
+    music: "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Spanish%20Summer.mp3" },
 ];
 
-type PoseKey = "idle" | "work" | "dance" | "eat" | "feed" | "perch" | "pet" | "candle" | "phone";
+type PoseKey = "idle" | "work" | "dance" | "eat" | "feed" | "perch" | "pet" | "candle" | "phone" | "sleep" | "stretch";
 
 const MSGS: Record<PoseKey, string[]> = {
   idle:   ["Hey friend! Ready when you are ✨","I'm right here with you 💜","Take your time — I'm not going anywhere 🌸"],
@@ -42,6 +45,8 @@ const MSGS: Record<PoseKey, string[]> = {
   pet:    ["Pets pets pets 💜","Mochi is purring so loud 🐱✨","Soft kitty, warm kitty 🌸"],
   candle: ["Candle lit — cozy mode on 🕯️","Tiny ritual, big calm ✨","Soft glow, soft brain 💛"],
   phone:  ["Calling a friend — connection time 📞","You're not alone, friend 💜","Hearing a voice helps ☎️"],
+  sleep:  ["Power nap mode 💤","Resting is productive too 🌙","Sweet dreams, friend ✨"],
+  stretch:["Big stretch! Roll those shoulders 🧘","Breathe in… and out 🌿","Your body thanks you 💜"],
 };
 
 const CSS = `
