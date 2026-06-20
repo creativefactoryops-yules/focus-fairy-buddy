@@ -1332,13 +1332,13 @@ function App() {
               <div className="bd-stage">
                 <div style={{ position:"absolute", inset:0 }}>
                   <Room mood={mood} pose={pose} accent={accent} candleLit={candleLit} layout={layout} onMove={onMoveItem} dialing={dialing} />
-                  {/* Scale wrapper — makes friend + Mochi smaller so the room has more breathing room for new items */}
-                  <div style={{ position:"absolute", inset:0, transform:"scale(0.72)", transformOrigin:"50% 100%", pointerEvents:"none" }}>
-                    <div style={{ position:"absolute", inset:0, pointerEvents:"auto" }}>
-                      <Character pose={pose} accent={accent} colors={colors} kind={kind} onTap={onTapGirl} tapBurst={tapGirl} facialHair={profile?.facial_hair || "none"} accessory={profile?.accessory || "none"} />
-                      <Cat pose={pose} accent={accent} colors={colors} onTap={onTapCat} tapBurst={tapCat} />
-                    </div>
-                  </div>
+                  {/* Per-character pinch scale (mobile pinch / ⌘/Ctrl + wheel). Helps OCD / spectrum friendly fine-tuning. */}
+                  <Character pose={pose} accent={accent} colors={colors} kind={kind} onTap={onTapGirl} tapBurst={tapGirl} facialHair={profile?.facial_hair || "none"} accessory={profile?.accessory || "none"} extraScale={charScale} onScaleChange={onCharScale} />
+                  <Cat pose={pose} accent={accent} colors={colors} onTap={onTapCat} tapBurst={tapCat} extraScale={catScale} onScaleChange={onCatScale} />
+                  {/* Happy-face pixel balloons during dance breaks */}
+                  {pose === "dance" && Array.from({ length: 7 }, (_, i) => (
+                    <div key={"bln"+i} style={{ position:"absolute", bottom:"18%", left:(12 + i*11) + "%", fontSize: 16 + (i%3)*4, pointerEvents:"none", opacity:0, animation:`balloonRise ${2.6 + (i%4)*0.35}s ease-out ${i*0.22}s infinite`, zIndex:9 }}>😊</div>
+                  ))}
                   <Confetti active={pose === "dance"} accent={accent} />
                   {notif.text && <Notif text={notif.text} accent={accent} id={notif.id} />}
                 </div>
@@ -1347,7 +1347,7 @@ function App() {
                 {curMsg}
               </div>
               <div style={{ textAlign:"center", fontSize:9.5, color:"rgba(255,255,255,0.32)", padding:"4px 0 8px", letterSpacing:0.5 }}>
-                ✋ Tap your friend or Mochi · Drag any item to rearrange
+                ✋ Tap · Drag items · Pinch friend / Mochi to resize · ⌘/Ctrl + wheel on desktop
               </div>
             </div>
 
